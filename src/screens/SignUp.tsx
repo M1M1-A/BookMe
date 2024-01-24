@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert } from "react-native";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase';
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 const backImage = require("../../assets/abstractShapes.png");
 
-export default function Signup({ navigation }) {
+export default function Signup() {
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = React.useState<string>('');
+  const [password, setPassword] = React.useState<string>('');
+  const navigation = useNavigation()
 
 const onHandleSignup = () => {
     if (email !== '' && password !== '') {
@@ -48,7 +50,7 @@ const onHandleSignup = () => {
       </TouchableOpacity>
       <View style={styles.logInView}>
         <Text style={styles.noAccountText}>Don't have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("LogIn")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
           <Text style={styles.logInText}>Log In</Text>
         </TouchableOpacity>
       </View>

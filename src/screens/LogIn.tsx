@@ -11,17 +11,17 @@ import {
   StatusBar,
   Alert
 } from 'react-native';
-// import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 const bgImage = require('../../assets/abstractShapes.png')
 
 
-export default function LogIn({navigation}) {
+export default function LogIn() {
 
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  // const navigation = useNavigation();
+  const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+  const navigation = useNavigation();
 
   const onHandleLogin = () => {
     if (email !== "" && password !== "") {
@@ -62,7 +62,7 @@ export default function LogIn({navigation}) {
         </TouchableOpacity>
         <View style={styles.signUpView}>
           <Text style={styles.noAccountText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+          <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
             <Text style={styles.signUpText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
