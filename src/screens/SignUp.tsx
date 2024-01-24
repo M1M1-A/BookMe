@@ -1,42 +1,30 @@
 import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  Button, 
-  TextInput, 
-  Image, 
-  SafeAreaView, 
-  TouchableOpacity,
-  StatusBar,
-  Alert
-} from 'react-native';
-import { useNavigation } from "@react-navigation/native";
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { StyleSheet, Text, View, Button, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert } from "react-native";
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../config/firebase';
-const bgImage = require('../../assets/abstractShapes.png')
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+const backImage = require("../../assets/abstractShapes.png");
 
+export default function Signup() {
 
-export default function LogIn() {
+  const [email, setEmail] = React.useState<string>('');
+  const [password, setPassword] = React.useState<string>('');
+  const navigation = useNavigation()
 
-  const [email, setEmail] = React.useState<string>("");
-  const [password, setPassword] = React.useState<string>("");
-  const navigation = useNavigation();
-
-  const onHandleLogin = () => {
-    if (email !== "" && password !== "") {
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => console.log("Login successful"))
-        .catch((error) => Alert.alert("Login error", error.message))
+const onHandleSignup = () => {
+    if (email !== '' && password !== '') {
+  createUserWithEmailAndPassword(auth, email, password)
+        .then(() => console.log('Signup success'))
+        .catch((err) => Alert.alert("Login error", err.message));
     }
-  }
-
+  };
+  
   return (
     <View style={styles.container}>
-      <Image source={bgImage} style={styles.bgImage} />
+      <Image source={backImage} style={styles.backImage} />
       <View style={styles.whiteSheet} />
       <SafeAreaView style={styles.form}>
-        <Text style={styles.title}>Login</Text>
+        <Text style={styles.title}>Sign Up</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter email"
@@ -57,21 +45,20 @@ export default function LogIn() {
           value={password}
           onChangeText={(text) => setPassword(text)}
         />
-        <TouchableOpacity style={styles.button} onPress={onHandleLogin}>
-          <Text style={styles.loginText}> Log In</Text>
+      <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
+        <Text style={styles.signUpText}> Sign Up</Text>
+      </TouchableOpacity>
+      <View style={styles.logInView}>
+        <Text style={styles.noAccountText}>Don't have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.logInText}>Log In</Text>
         </TouchableOpacity>
-        <View style={styles.signUpView}>
-          <Text style={styles.noAccountText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-            <Text style={styles.signUpText}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
+      </View>
       </SafeAreaView>
+      <StatusBar barStyle="light-content" />
     </View>
-  )
+  );
 }
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -92,14 +79,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 12,
   },
-  loginText: {
-    fontWeight: 'bold', 
-    color: '#fff', 
-    fontSize: 18
-  },
-  bgImage: {
+  backImage: {
     width: "100%",
-    height: "100%",
+    height: 340,
     position: "absolute",
     top: 0,
     resizeMode: 'cover',
@@ -125,7 +107,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 40,
   },
-  signUpView: {
+  signUpText: {
+    fontWeight: 'bold', 
+    color: '#fff', 
+    fontSize: 18
+  },
+  logInView: {
     marginTop: 20, 
     flexDirection: 'row', 
     alignItems: 'center', 
@@ -136,9 +123,9 @@ const styles = StyleSheet.create({
     fontWeight: '600', 
     fontSize: 14
   },
-  signUpText: {
+  logInText: {
     color: '#f57c00', 
     fontWeight: '600', 
     fontSize: 14
   }
-})
+});
