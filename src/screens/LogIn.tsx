@@ -1,24 +1,22 @@
-import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  Button, 
-  TextInput, 
-  Image, 
-  SafeAreaView, 
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TextInput,
+  Image,
+  SafeAreaView,
   TouchableOpacity,
   StatusBar,
-  Alert
-} from 'react-native';
+  Alert,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../config/firebase';
-const bgImage = require('../../assets/abstractShapes.png')
-
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../config/firebase.js";
+const bgImage = require("../../assets/abstractShapes.png");
 
 export default function LogIn() {
-
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const navigation = useNavigation();
@@ -27,9 +25,9 @@ export default function LogIn() {
     if (email !== "" && password !== "") {
       signInWithEmailAndPassword(auth, email, password)
         .then(() => console.log("Login successful"))
-        .catch((error) => Alert.alert("Login error", error.message))
+        .catch((error) => Alert.alert("Login error", error.message));
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -68,9 +66,8 @@ export default function LogIn() {
         </View>
       </SafeAreaView>
     </View>
-  )
+  );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -79,7 +76,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 36,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: "orange",
     alignSelf: "center",
     paddingBottom: 24,
@@ -93,52 +90,52 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   loginText: {
-    fontWeight: 'bold', 
-    color: '#fff', 
-    fontSize: 18
+    fontWeight: "bold",
+    color: "#fff",
+    fontSize: 18,
   },
   bgImage: {
     width: "100%",
     height: "100%",
     position: "absolute",
     top: 0,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   whiteSheet: {
-    width: '100%',
-    height: '75%',
+    width: "100%",
+    height: "75%",
     position: "absolute",
     bottom: 0,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopLeftRadius: 60,
   },
   form: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginHorizontal: 30,
   },
   button: {
-    backgroundColor: '#f57c00',
+    backgroundColor: "#f57c00",
     height: 58,
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 40,
   },
   signUpView: {
-    marginTop: 20, 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    alignSelf: 'center'
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
   },
   noAccountText: {
-    color: 'gray', 
-    fontWeight: '600', 
-    fontSize: 14
+    color: "gray",
+    fontWeight: "600",
+    fontSize: 14,
   },
   signUpText: {
-    color: '#f57c00', 
-    fontWeight: '600', 
-    fontSize: 14
-  }
-})
+    color: "#f57c00",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+});

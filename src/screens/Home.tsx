@@ -1,8 +1,47 @@
+import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { db } from '../../config/firebase'
+import { addDoc, collection, query,   doc,
+  onSnapshot,
+  updateDoc,
+  setDoc,
+  deleteDoc,
+  serverTimestamp,
+  getDocs,
+  where,
+  orderBy,
+  limit, } from "firebase/firestore";
 
 export default function Home() {
+  const [ djs, setDjs] = useState([])
+  const [loading, setIsLoading] = useState(false)
+  const collectionRef = collection(db, 'DJs');
+
+  useEffect(() => {
+    const q = query(collectionRef, 
+      where('name', '==', 'Ekany'));
+
+    const unsub = onSnapshot(collectionRef, (querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+      setDjs(items);
+      console.log(djs)
+    });
+    return () => {
+      unsub();
+    };
+  }, [])
+
+  // const addTodo = async () => {
+  //   const doc =     addDoc(collection(db, 'bookings'), {
+  //     bookingDate: '12/02/2024',
+  //     description: 'Need DJ for wedding after party for 4 hours'
+  //   })
+  //   // console.log("")
+  // }
 
   return (
     <SafeAreaView>
@@ -13,7 +52,7 @@ export default function Home() {
             <Text>Bio ajhdjahsjdhsja</Text>
             <Text>Links, insta</Text>      
           </View>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity onPress={() => addTodo()} style={styles.button}>
             <Text>BOOK</Text>
           </TouchableOpacity>
         </View>
