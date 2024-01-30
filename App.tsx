@@ -40,9 +40,10 @@ const HomeStack = () => {
   );
 };
 
-function RootNavigator() {
+const RootNavigator = () => {
   const { user, setUser } = useContext(AuthenticatedUserContext);
   const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(
       auth,

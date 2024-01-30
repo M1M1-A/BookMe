@@ -1,31 +1,24 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { db } from '../../config/firebase'
-import { collection, getDocs, query } from "firebase/firestore";
+import { firebase } from '../../config/firebase'
 
 export default function Home() {
-  // const [djs, setDJs] = useState([]);
-  // const collectionRef = collection(db, 'DJs')
+  // const [djs, setDjs] = useState([]);
 
   useEffect(() => {
-    const fetchDjs = async () => {
-      try {
-        const q = query(collection(db, "DJs"))
-
-        const querySnapshot = await getDocs(q)
-        querySnapshot.forEach((doc) => {
-          console.log(doc.id, " => ", doc.data());
-        });
-        // const data = await getDocs(collectionRef)
-        // console.log(data)
-      } catch (error) {
-        console.log("Error", error)
-      }
-    }
-    fetchDjs();
-
-  }, []);
+    firebase.firestore()
+    .collection('DJs')
+    .onSnapshot((querySnapshot) => {
+      // const allDjs = []
+      querySnapshot.forEach((doc) => {
+        const {name} = doc.data();
+        console.log(name)
+        // allDjs.push({name, bio, id: doc.id})
+      })
+      // setDjs(allDjs)
+    })
+  }, [])
 
 
   return (
@@ -37,7 +30,7 @@ export default function Home() {
             <Text>Bio ajhdjahsjdhsja</Text>
             <Text>Links, insta</Text>      
           </View>
-          <TouchableOpacity onPress={() => addTodo()} style={styles.button}>
+          <TouchableOpacity style={styles.button}>
             <Text>BOOK</Text>
           </TouchableOpacity>
         </View>
