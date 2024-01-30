@@ -2,46 +2,31 @@ import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { db } from '../../config/firebase'
-import { addDoc, collection, query,   doc,
-  onSnapshot,
-  updateDoc,
-  setDoc,
-  deleteDoc,
-  serverTimestamp,
-  getDocs,
-  where,
-  orderBy,
-  limit, } from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 
 export default function Home() {
-  const [ djs, setDjs] = useState([])
-  const [loading, setIsLoading] = useState(false)
-  const collectionRef = collection(db, 'DJs');
+  // const [djs, setDJs] = useState([]);
+  // const collectionRef = collection(db, 'DJs')
 
   useEffect(() => {
-    const q = query(collectionRef, 
-      where('name', '==', 'Ekany'));
+    const fetchDjs = async () => {
+      try {
+        const q = query(collection(db, "DJs"))
 
-    const unsub = onSnapshot(collectionRef, (querySnapshot) => {
-      const items = [];
-      querySnapshot.forEach((doc) => {
-        items.push(doc.data());
-      });
-      setDjs(items);
-      console.log(djs)
-    });
-    return () => {
-      unsub();
-    };
-  }, [])
+        const querySnapshot = await getDocs(q)
+        querySnapshot.forEach((doc) => {
+          console.log(doc.id, " => ", doc.data());
+        });
+        // const data = await getDocs(collectionRef)
+        // console.log(data)
+      } catch (error) {
+        console.log("Error", error)
+      }
+    }
+    fetchDjs();
 
-  // const addTodo = async () => {
-  //   const doc =     addDoc(collection(db, 'bookings'), {
-  //     bookingDate: '12/02/2024',
-  //     description: 'Need DJ for wedding after party for 4 hours'
-  //   })
-  //   // console.log("")
-  // }
+  }, []);
+
 
   return (
     <SafeAreaView>
@@ -73,7 +58,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: 400,
     height: 650,
-    backgroundColor: "crimson",
+    backgroundColor: "white",
     borderRadius: 7
   },
   button: {
