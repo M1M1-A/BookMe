@@ -4,19 +4,31 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from '../../config/firebase'
 
 export default function Home() {
-  // const [djs, setDjs] = useState([]);
+  const [djs, setDjs] = useState([]);
+
+  type djData = {
+    audio: URL,
+    availability: string,
+    bio: string,
+    email: string,
+    genres: string[],
+    hourlyRate: string,
+    images: string[],
+    instagram: URL,
+    name: string,
+    soundcloud: string
+  }
 
   useEffect(() => {
     firebase.firestore()
     .collection('DJs')
     .onSnapshot((querySnapshot) => {
-      // const allDjs = []
+      const allDjs: djData[] = []
       querySnapshot.forEach((doc) => {
-        const {name} = doc.data();
-        console.log(name)
-        // allDjs.push({name, bio, id: doc.id})
+        allDjs.push(doc.data())
       })
-      // setDjs(allDjs)
+      setDjs(allDjs)
+      console.log("All DJs retrieved")
     })
   }, [])
 
@@ -24,16 +36,21 @@ export default function Home() {
   return (
     <SafeAreaView>
       <ScrollView contentContainerStyle={styles.container}>
-        <View id="djCard" style={styles.djCard}>
-          {/* <Image source={}/> */}
+        { djs.map((dj) => (
+          <View id="djCard" style={styles.djCard}>
+          {/* <Image source={{uri: "gs://bookme-f607f.appspot.com/DJs/Ekany/Ekany.png"}}/> */}
           <View id="djInfo">
-            <Text>Bio ajhdjahsjdhsja</Text>
-            <Text>Links, insta</Text>      
+            <Text>{dj.name}</Text>
+            <Text>{dj.bio}</Text>
+            {dj.genres.map((genre)=> (
+                <Text>{genre}</Text>
+            ))}      
           </View>
           <TouchableOpacity style={styles.button}>
             <Text>BOOK</Text>
           </TouchableOpacity>
         </View>
+      ))}
       </ScrollView>    
     </SafeAreaView>
   )
