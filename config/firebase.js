@@ -1,7 +1,12 @@
-import { initializeApp } from "firebase/app";
+// import { initializeApp } from "firebase/app";
+// import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 import Constants from 'expo-constants';
+
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/auth'
+import 'firebase/compat/firestore'
+import 'firebase/compat/storage'; 
 
 // Firebase config
 const firebaseConfig = {
@@ -15,7 +20,14 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// const app = initializeApp(firebaseConfig);
+// export const db = getFirestore(app);
+
+if (!firebase.apps.length){
+  firebase.initializeApp(firebaseConfig)
+}
+
+export { firebase }
 export const auth = getAuth();
-export const database = getFirestore();
+
 

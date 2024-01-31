@@ -1,24 +1,34 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert } from "react-native";
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../config/firebase';
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TextInput,
+  Image,
+  SafeAreaView,
+  TouchableOpacity,
+  StatusBar,
+  Alert,
+} from "react-native";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../config/firebase.js";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 const backImage = require("../../assets/abstractShapes.png");
 
 export default function Signup() {
+  const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+  const navigation = useNavigation();
 
-  const [email, setEmail] = React.useState<string>('');
-  const [password, setPassword] = React.useState<string>('');
-  const navigation = useNavigation()
-
-const onHandleSignup = () => {
-    if (email !== '' && password !== '') {
-  createUserWithEmailAndPassword(auth, email, password)
-        .then(() => console.log('Signup success'))
+  const onHandleSignup = () => {
+    if (email !== "" && password !== "") {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => console.log("Signup success"))
         .catch((err) => Alert.alert("Login error", err.message));
     }
   };
-  
+
   return (
     <View style={styles.container}>
       <Image source={backImage} style={styles.backImage} />
@@ -45,15 +55,15 @@ const onHandleSignup = () => {
           value={password}
           onChangeText={(text) => setPassword(text)}
         />
-      <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
-        <Text style={styles.signUpText}> Sign Up</Text>
-      </TouchableOpacity>
-      <View style={styles.logInView}>
-        <Text style={styles.noAccountText}>Don't have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.logInText}>Log In</Text>
+        <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
+          <Text style={styles.signUpText}> Sign Up</Text>
         </TouchableOpacity>
-      </View>
+        <View style={styles.logInView}>
+          <Text style={styles.noAccountText}>Don't have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={styles.logInText}>Log In</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
       <StatusBar barStyle="light-content" />
     </View>
@@ -66,7 +76,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 36,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: "orange",
     alignSelf: "center",
     paddingBottom: 24,
@@ -84,48 +94,48 @@ const styles = StyleSheet.create({
     height: 340,
     position: "absolute",
     top: 0,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   whiteSheet: {
-    width: '100%',
-    height: '75%',
+    width: "100%",
+    height: "75%",
     position: "absolute",
     bottom: 0,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopLeftRadius: 60,
   },
   form: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginHorizontal: 30,
   },
   button: {
-    backgroundColor: '#f57c00',
+    backgroundColor: "#f57c00",
     height: 58,
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 40,
   },
   signUpText: {
-    fontWeight: 'bold', 
-    color: '#fff', 
-    fontSize: 18
+    fontWeight: "bold",
+    color: "#fff",
+    fontSize: 18,
   },
   logInView: {
-    marginTop: 20, 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    alignSelf: 'center'
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
   },
   noAccountText: {
-    color: 'gray', 
-    fontWeight: '600', 
-    fontSize: 14
+    color: "gray",
+    fontWeight: "600",
+    fontSize: 14,
   },
   logInText: {
-    color: '#f57c00', 
-    fontWeight: '600', 
-    fontSize: 14
-  }
+    color: "#f57c00",
+    fontWeight: "600",
+    fontSize: 14,
+  },
 });
