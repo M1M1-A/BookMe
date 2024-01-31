@@ -7,7 +7,7 @@ export default function Home() {
   const [djs, setDjs] = useState([]);
 
   type djData = {
-    audio: URL,
+    audio: string[],
     availability: string,
     bio: string,
     email: string,
@@ -19,31 +19,57 @@ export default function Home() {
     soundcloud: string
   }
 
-  useEffect(() => {
-    firebase.firestore()
-    .collection('DJs')
-    .onSnapshot((querySnapshot) => {
-      const allDjs: djData[] = []
-      querySnapshot.forEach((doc) => {
-        allDjs.push(doc.data())
-      })
-      setDjs(allDjs)
-      console.log("All DJs retrieved")
-    })
-  }, [])
+  const getImageURL = async (imageRef: string) => {
+    const ref = firebase.storage().refFromURL(imageRef)
+    const url = await ref.getDownloadURL()
+    return url
+  }
 
+  useEffect(() => {
+    firebase
+      .firestore()
+      .collection('DJs')
+      .onSnapshot(async (querySnapshot) => {
+        const allDjs: djData[] = [];
+        const promises: Promise<string>[] = [];
+  
+        querySnapshot.forEach(async (doc) => {
+          const dj = doc.data();
+          const imageURLs: string[] = [];
+  
+          if (dj.images.length > 0) {
+            dj.images.forEach((ref: string) => {
+              const promise = getImageURL(ref);
+              promises.push(promise);  
+              promise.then((url) => {
+                imageURLs.push(url);
+              });
+            });
+          }
+  
+          dj.images = imageURLs;
+          dj.id = doc.id
+          allDjs.push(dj);
+        });
+  
+        await Promise.all(promises);  
+        setDjs(allDjs);
+        console.log("All DJs retrieved");
+      });
+  }, []);
+  
 
   return (
     <SafeAreaView>
       <ScrollView contentContainerStyle={styles.container}>
         { djs.map((dj) => (
           <View id="djCard" style={styles.djCard}>
-          {/* <Image source={{uri: "gs://bookme-f607f.appspot.com/DJs/Ekany/Ekany.png"}}/> */}
-          <View id="djInfo">
+            <Image source={{uri: dj.images[0]}} style={styles.image}/>
+          <View id="djInfo" key={dj.id}>
             <Text>{dj.name}</Text>
             <Text>{dj.bio}</Text>
             {dj.genres.map((genre)=> (
-                <Text>{genre}</Text>
+              <Text>{genre}</Text>
             ))}      
           </View>
           <TouchableOpacity style={styles.button}>
@@ -67,9 +93,14 @@ const styles = StyleSheet.create({
     padding: 10,
     alignSelf: 'center',
     width: 400,
-    height: 650,
+    height: 750,
     backgroundColor: "white",
     borderRadius: 7
+  },
+  image: {
+    width: 400,
+    height: 420,
+    alignSelf: 'center'
   },
   button: {
     backgroundColor: '#f57c00',
