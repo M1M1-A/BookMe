@@ -7,6 +7,7 @@ import { auth } from "./config/firebase.js";
 import Home from "./src/screens/Home";
 import Login from "./src/screens/LogIn";
 import SignUp from "./src/screens/SignUp";
+import MakeBooking from "./src/screens/MakeBooking";
 
 const Stack = createStackNavigator();
 const AuthenticatedUserContext = createContext({});
@@ -24,10 +25,11 @@ const AuthStack = () => {
   return (
     <Stack.Navigator
       initialRouteName="Login"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: true }}
     >
       <Stack.Screen name="Home" component={Home} />
       {/* <Stack.Screen name="SignUp" component={SignUp} /> */}
+      <Stack.Screen name="MakeBooking" component={MakeBooking} />
     </Stack.Navigator>
   );
 };
@@ -36,6 +38,7 @@ const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="MakeBooking" component={MakeBooking} />
     </Stack.Navigator>
   );
 };

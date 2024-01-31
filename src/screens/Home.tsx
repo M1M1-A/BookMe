@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from '../../config/firebase'
+import { useNavigation } from "@react-navigation/native";
 
 export default function Home() {
   const [djs, setDjs] = useState([]);
+  const navigation = useNavigation()
 
   type djData = {
     audio: string[],
@@ -19,40 +21,19 @@ export default function Home() {
     soundcloud: string
   }
 
-  const getImageURL = async (imageRef: string) => {
-    const ref = firebase.storage().refFromURL(imageRef)
-    const url = await ref.getDownloadURL()
-    return url
-  }
-
   useEffect(() => {
     firebase
       .firestore()
       .collection('DJs')
       .onSnapshot(async (querySnapshot) => {
         const allDjs: djData[] = [];
-        const promises: Promise<string>[] = [];
   
         querySnapshot.forEach(async (doc) => {
           const dj = doc.data();
-          const imageURLs: string[] = [];
-  
-          if (dj.images.length > 0) {
-            dj.images.forEach((ref: string) => {
-              const promise = getImageURL(ref);
-              promises.push(promise);  
-              promise.then((url) => {
-                imageURLs.push(url);
-              });
-            });
-          }
-  
-          dj.images = imageURLs;
           dj.id = doc.id
           allDjs.push(dj);
         });
   
-        await Promise.all(promises);  
         setDjs(allDjs);
         console.log("All DJs retrieved");
       });
@@ -64,7 +45,7 @@ export default function Home() {
       <ScrollView contentContainerStyle={styles.container}>
         { djs.map((dj) => (
           <View id="djCard" style={styles.djCard}>
-            <Image source={{uri: dj.images[0]}} style={styles.image}/>
+          <Image source={{uri: dj.images[0]}} style={styles.image}/>
           <View id="djInfo" key={dj.id}>
             <Text>{dj.name}</Text>
             <Text>{dj.bio}</Text>
@@ -72,8 +53,10 @@ export default function Home() {
               <Text>{genre}</Text>
             ))}      
           </View>
-          <TouchableOpacity style={styles.button}>
-            <Text>BOOK</Text>
+          <TouchableOpacity 
+            onPress={()=> navigation.navigate('MakeBooking')} 
+            style={styles.button}>
+            <Text style={{color: 'white'}}>BOOK</Text>
           </TouchableOpacity>
         </View>
       ))}
@@ -103,7 +86,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   button: {
-    backgroundColor: '#f57c00',
+    backgroundColor: 'black',
     height: 58,
     borderRadius: 10,
     justifyContent: 'center',
