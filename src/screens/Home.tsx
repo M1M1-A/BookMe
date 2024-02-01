@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "rea
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from '../../config/firebase'
 import { useNavigation } from "@react-navigation/native";
+import AudioPlayer from "../components/AudioPlayer";
 
 export default function Home() {
   const [djs, setDjs] = useState([]);
@@ -15,6 +16,7 @@ export default function Home() {
     email: string,
     genres: string[],
     hourlyRate: string,
+    id: string,
     images: string[],
     instagram: URL,
     name: string,
@@ -38,28 +40,30 @@ export default function Home() {
         console.log("All DJs retrieved");
       });
   }, []);
-  
 
   return (
     <SafeAreaView>
       <ScrollView contentContainerStyle={styles.container}>
         { djs.map((dj) => (
           <View id="djCard" style={styles.djCard}>
-          <Image source={{uri: dj.images[0]}} style={styles.image}/>
-          <View id="djInfo" key={dj.id}>
-            <Text>{dj.name}</Text>
-            <Text>{dj.bio}</Text>
-            {dj.genres.map((genre)=> (
-              <Text>{genre}</Text>
-            ))}      
+            <Image source={{uri: dj.images[0]}} style={styles.image}/>
+            <AudioPlayer audioUrl={dj.audio[0]}/>
+            <View id="djInfo" key={dj.id}>
+              <Text style={styles.djName}>{dj.name}</Text>
+              <Text style={styles.djBio}>{dj.bio}</Text>
+              <View style={styles.genresContainer}>
+              {dj.genres.map((genre)=> (
+                  <Text style={styles.genresText}>{genre}</Text>
+              ))}      
+              </View>
+            </View>
+            <TouchableOpacity 
+              onPress={()=> navigation.navigate('MakeBooking')} 
+              style={styles.button}>
+              <Text style={{color: 'white'}}>BOOK</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity 
-            onPress={()=> navigation.navigate('MakeBooking')} 
-            style={styles.button}>
-            <Text style={{color: 'white'}}>BOOK</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
+        ))}
       </ScrollView>    
     </SafeAreaView>
   )
@@ -75,22 +79,50 @@ const styles = StyleSheet.create({
   djCard: {
     padding: 10,
     alignSelf: 'center',
-    width: 400,
-    height: 750,
+    width: 450,
+    height: 800,
     backgroundColor: "white",
     borderRadius: 7
+  },
+  djName: {
+    marginTop: 10,
+    marginBottom: 10,
+    marginRight: 10,
+    marginLeft: 20,
+    fontWeight: 'bold',
+    fontSize: 30
+  },
+  djBio: {
+    marginTop: 10,
+    marginBottom: 10,
+    marginRight: 10,
+    marginLeft: 20
   },
   image: {
     width: 400,
     height: 420,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    // marginBottom: 5
   },
   button: {
     backgroundColor: 'black',
     height: 58,
+    width: 400,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 20,
+    alignSelf: 'center'
   },
+  genresContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  genresText: {
+    paddingRight: 10,
+    paddingTop: 10, 
+    paddingBottom: 10,
+    paddingLeft: 20,
+    fontWeight: 'bold'
+  }
 })
