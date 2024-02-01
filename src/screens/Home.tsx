@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "rea
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from '../../config/firebase'
 import { useNavigation } from "@react-navigation/native";
+import AudioPlayer from "../components/AudioPlayer";
 
 export default function Home() {
   const [djs, setDjs] = useState([]);
@@ -15,6 +16,7 @@ export default function Home() {
     email: string,
     genres: string[],
     hourlyRate: string,
+    id: string,
     images: string[],
     instagram: URL,
     name: string,
@@ -38,7 +40,6 @@ export default function Home() {
         console.log("All DJs retrieved");
       });
   }, []);
-  
 
   return (
     <SafeAreaView>
@@ -46,6 +47,7 @@ export default function Home() {
         { djs.map((dj) => (
           <View id="djCard" style={styles.djCard}>
           <Image source={{uri: dj.images[0]}} style={styles.image}/>
+          <AudioPlayer audioUrl={dj.audio[0]}/>
           <View id="djInfo" key={dj.id}>
             <Text>{dj.name}</Text>
             <Text>{dj.bio}</Text>

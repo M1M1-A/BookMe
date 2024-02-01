@@ -8,7 +8,7 @@ import Home from "./src/screens/Home";
 import Login from "./src/screens/LogIn";
 import SignUp from "./src/screens/SignUp";
 import MakeBooking from "./src/screens/MakeBooking";
-import TrackPlayer from 'react-native-track-player';
+// import TrackPlayer from 'react-native-track-player';
 
 const Stack = createStackNavigator();
 const AuthenticatedUserContext = createContext({});
@@ -82,4 +82,4 @@ export default function App() {
   );
 }
 
-TrackPlayer.registerPlaybackService(() => require('./service'));
+// TrackPlayer.registerPlaybackService(() => require('./service'));

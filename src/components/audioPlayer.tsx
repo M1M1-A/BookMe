@@ -1,38 +1,65 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import TrackPlayer, {usePlaybackState, State} from 'react-native-track-player';
+import { View, Text, StyleSheet, Button } from 'react-native'
+import Slider from "@react-native-community/slider"
+import React, { useEffect, useState } from 'react'
+import { Audio } from 'expo-av'
 
-const setUpPlayer = async () => {
-  const song = {
-    url: "https://firebasestorage.googleapis.com/v0/b/bookme-f607f.appspot.com/o/DJs%2FEkany%2FTrimmed%20Ekany%20Mix%20'24.mp3?alt=media&token=cd7b0651-4748-4bb9-86c0-f12a6c8488d4", 
-    title: 'Ekany Mix',
-    artist: 'EKany',
-  }
-  await TrackPlayer.setupPlayer();
+const AudioPlayer = ({audioUrl}) => {
+  const [sound, setSound] = useState()
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [position, setPosition] = useState(0);
+  const [duration, setDuration] = useState(0);
 
-  await TrackPlayer.add(song)
-}
-
-const togglePlayback = async (playbackState) => {
-  const currentTrack = TrackPlayer.getActiveTrackIndex()
-
-  if (currentTrack !== null) {
-    if (playbackState === State.Paused) {
-      await TrackPlayer.play()
+  const playPauseSound = async () => {
+    if (sound) {
+      if (isPlaying) {
+        await sound.pauseAsync()
+      } else {
+        await sound.playAsync()
+      }
+      setIsPlaying(!isPlaying)
     } else {
-      await TrackPlayer.pause()
+      const { sound } = await Audio.Sound.createAsync({uri: audioUrl})
+
+      setSound(sound)
+      console.log("Playing mix")
+      await sound.playAsync()
+      setIsPlaying(true)
+
+      setInterval(async () => {
+        const { positionMillis, durationMillis } = await sound.getStatusAsync();
+        setPosition(positionMillis);
+        setDuration(durationMillis);
+      }, 1000);
     }
   }
-}
 
-const audioPlayer = () => {
-  const playbackState = usePlaybackState()
+  const onSeek = async (value) => {
+    if (sound) {
+      await sound.setPositionAsync(value);
+      setPosition(value);
+    }
+  }
+  // useEffect(() => {
+  //   return sound
+  //     ? () => {
+  //       console.log("unloading sound")
+  //       sound.unloadAsync()
+  //     }
+  //     : undefined
+  // }, [sound])
 
   return (
     <View>
-      <Text>audioPlayer</Text>
+      <Button title={isPlaying ? "Pause Mix" : "Play Mix"} onPress={playPauseSound}/>
+      <Slider
+        style={{ width: 200, height: 40 }}
+        minimumValue={0}
+        maximumValue={duration}
+        value={position}
+        onSlidingComplete={onSeek}
+      />
     </View>
   )
 }
 
-export default audioPlayer
+export default AudioPlayer;
