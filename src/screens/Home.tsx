@@ -83,7 +83,7 @@ export default function Home() {
           onChangeText={(text) => setSearch(text)}
           value={search}
           inputStyle={{ color: 'black'}}
-          containerStyle={{ width: 300, backgroundColor: 'black'}}
+          containerStyle={{ width: 320, backgroundColor: 'black'}}
           inputContainerStyle={{ backgroundColor: 'white'}}
         />
         <DropDownPicker/>
@@ -106,7 +106,8 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    zIndex: 1
+    zIndex: 1,
+    backgroundColor: 'black'
   },
   djCard: {
     padding: 10,

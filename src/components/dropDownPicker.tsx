@@ -32,11 +32,11 @@ const dropDownPicker = () => {
         }}
         containerStyle={{ 
           height: 40, 
-          width: 100, 
+          width: 90, 
           alignItems: 'center', 
           justifyContent: 'center',
-          paddingLeft: 10,
-          paddingTop: 10
+          paddingLeft: 5,
+          paddingTop: 25,
         }}
       />
     </View>
