@@ -58,7 +58,7 @@ export default function Home() {
         </View>
       </View>
       <TouchableOpacity 
-        onPress={()=> navigation.navigate('MakeBooking')} 
+        onPress={()=> navigation.navigate('MakeBooking', {djId: dj.id, djName: dj.name})} 
         style={styles.button}>
         <Text style={{color: 'white'}}>BOOK</Text>
       </TouchableOpacity>
@@ -69,11 +69,6 @@ export default function Home() {
     dj.name.toLowerCase().includes(search.toLowerCase()) ||
     dj.genres.some(genre => genre.toLowerCase().includes(search.toLowerCase()))
     )
-
-  const dropdownItems = [
-    { label: 'Login', value: 'login' },
-    { label: 'Signup', value: 'signup' },
-  ];
 
   return (
     <SafeAreaView>
