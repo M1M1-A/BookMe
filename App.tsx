@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { StyleSheet, Text, View, ActivityIndicator, Button } from "react-native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { onAuthStateChanged } from "firebase/auth";
 import { createContext, useState, useEffect, useContext } from "react";
@@ -23,12 +23,18 @@ const AuthenticatedUserProvider = ({ children }) => {
 };
 
 const AuthStack = () => {
+  const navigation = useNavigation()
+
   return (
     <Stack.Navigator
-      initialRouteName="Login"
-      screenOptions={{ headerShown: false }}
+      // initialRouteName="Login"
+      screenOptions={{ headerShown: true }}
     >
-      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen 
+        name="Home" 
+        component={Home}
+      />
+      <Stack.Screen name="Login" component={Login} />
       {/* <Stack.Screen name="SignUp" component={SignUp} /> */}
       <Stack.Screen name="MakeBooking" component={MakeBooking} />
     </Stack.Navigator>

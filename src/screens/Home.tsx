@@ -5,6 +5,7 @@ import { firebase } from '../../config/firebase'
 import { useNavigation } from "@react-navigation/native";
 import AudioPlayer from "../components/audioPlayer";
 import { SearchBar } from "react-native-elements";
+import DropDownPicker from '../components/dropDownPicker'
 
 export default function Home() {
   const [djs, setDjs] = useState([]);
@@ -69,16 +70,24 @@ export default function Home() {
     dj.genres.some(genre => genre.toLowerCase().includes(search.toLowerCase()))
     )
 
+  const dropdownItems = [
+    { label: 'Login', value: 'login' },
+    { label: 'Signup', value: 'signup' },
+  ];
+
   return (
     <SafeAreaView>
-      <SearchBar 
-        placeholder="Search by DJ name or Genre"
-        onChangeText={(text) => setSearch(text)}
-        value={search}
-        inputStyle={{ color: 'white'}}
-        containerStyle={{ backgroundColor: 'black'}}
-        inputContainerStyle={{ backgroundColor: 'white'}}
-      />
+      <View style={styles.header}>
+        <SearchBar 
+          placeholder="Search by DJ name or Genre"
+          onChangeText={(text) => setSearch(text)}
+          value={search}
+          inputStyle={{ color: 'black'}}
+          containerStyle={{ width: 300, backgroundColor: 'black'}}
+          inputContainerStyle={{ backgroundColor: 'white'}}
+        />
+        <DropDownPicker/>
+      </View>
       <ScrollView contentContainerStyle={styles.container}>
         { search ? 
           searchResults.map(renderDjs)
@@ -95,13 +104,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 20
   },
+  header: {
+    flexDirection: 'row',
+    zIndex: 1
+  },
   djCard: {
     padding: 10,
     alignSelf: 'center',
     width: 450,
     height: 800,
     backgroundColor: "white",
-    borderRadius: 7
+    borderRadius: 7,
+    zIndex: 0
   },
   djName: {
     marginTop: 10,
