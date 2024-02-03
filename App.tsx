@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { View, ActivityIndicator } from "react-native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { onAuthStateChanged } from "firebase/auth";
 import { createContext, useState, useEffect, useContext } from "react";
@@ -8,7 +8,6 @@ import Home from "./src/screens/Home";
 import Login from "./src/screens/LogIn";
 import SignUp from "./src/screens/SignUp";
 import MakeBooking from "./src/screens/MakeBooking";
-// import TrackPlayer from 'react-native-track-player';
 
 const Stack = createStackNavigator();
 const AuthenticatedUserContext = createContext({});
@@ -23,13 +22,16 @@ const AuthenticatedUserProvider = ({ children }) => {
 };
 
 const AuthStack = () => {
+  const navigation = useNavigation()
+
   return (
     <Stack.Navigator
-      initialRouteName="Login"
-      screenOptions={{ headerShown: true }}
+      // initialRouteName="Login"
+      screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name="Home" component={Home} />
-      {/* <Stack.Screen name="SignUp" component={SignUp} /> */}
+      <Stack.Screen name="Home" component={Home}/>
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="SignUp" component={SignUp} />
       <Stack.Screen name="MakeBooking" component={MakeBooking} />
     </Stack.Navigator>
   );
@@ -82,4 +84,3 @@ export default function App() {
   );
 }
 
-// TrackPlayer.registerPlaybackService(() => require('./service'));
