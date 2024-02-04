@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from '../../config/firebase'
 import { useNavigation } from "@react-navigation/native";
@@ -44,36 +44,37 @@ export default function Home() {
       });
   }, []);
 
-  const renderDjs = (dj) => (
-    <View id="djCard" style={styles.djCard}>
-      <Image source={{uri: dj.images[0]}} style={styles.image}/>
-      <AudioPlayer audioUrl={dj.audio[0]}/>
-      <View id="djInfo" key={dj.id}>
-        <Text style={styles.djName}>{dj.name}</Text>
-        <Text style={styles.djBio}>{dj.bio}</Text>
-        <View style={styles.genresContainer}>
-        {dj.genres.map((genre)=> (
-            <Text style={styles.genresText}>{genre}</Text>
-        ))}      
+  const renderDjs = (djData) => (
+    <FlatList 
+      data={djData}
+      keyExtractor={item => item.id}
+      renderItem={({item}) => (
+        <View id="djCard" style={styles.djCard}>
+          <Image source={{uri: item.images[0]}} style={styles.image}/>
+          <AudioPlayer audioUrl={item.audio[0]}/>
+          <View id="djInfo">
+            <Text style={styles.djName}>{item.name}</Text>
+            <Text style={styles.djBio}>{item.bio}</Text>
+            <View style={styles.genresContainer}>
+            {item.genres.map((genre, index)=> (
+                <Text key={index}style={styles.genresText}>{genre}</Text>
+            ))}      
+            </View>
+          </View>
+          <TouchableOpacity 
+            onPress={()=> navigation.navigate('MakeBooking', {djId: item.id, djName: item.name})} 
+            style={styles.button}>
+            <Text style={{color: 'white'}}>BOOK</Text>
+          </TouchableOpacity>
         </View>
-      </View>
-      <TouchableOpacity 
-        onPress={()=> navigation.navigate('MakeBooking')} 
-        style={styles.button}>
-        <Text style={{color: 'white'}}>BOOK</Text>
-      </TouchableOpacity>
-    </View>
+      )}
+    />
   )
 
   const searchResults = djs.filter(dj => 
     dj.name.toLowerCase().includes(search.toLowerCase()) ||
     dj.genres.some(genre => genre.toLowerCase().includes(search.toLowerCase()))
     )
-
-  const dropdownItems = [
-    { label: 'Login', value: 'login' },
-    { label: 'Signup', value: 'signup' },
-  ];
 
   return (
     <SafeAreaView>
@@ -88,11 +89,9 @@ export default function Home() {
         />
         <DropDownPicker/>
       </View>
-      <ScrollView contentContainerStyle={styles.container}>
-        { search ? 
-          searchResults.map(renderDjs)
-        : djs.map((renderDjs))}
-      </ScrollView>    
+      <View>
+        {search ? renderDjs(searchResults) : renderDjs(djs)}
+      </View>
     </SafeAreaView>
   )
 }
