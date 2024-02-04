@@ -6,12 +6,13 @@ import {
   StyleSheet, 
   ScrollView, 
   TouchableOpacity, 
-  Modal, 
-  Alert 
+  Modal 
 } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRoute, useNavigation } from '@react-navigation/native'
+import { firebase } from '../../config/firebase'
+
 const windowWidth = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height  
 
@@ -21,21 +22,36 @@ const MakeBooking = () => {
   const [ email, setEmail ] = useState<string>("")
   const [ eventDescription, setEventDescription ] = useState<string>("")
   const [ eventAddress, setEventAddress] = useState<string>("")
-  const [ eventDuration, setEventDuration ] = useState<string>("")
   const [modalVisible, setModalVisible] = useState(false)  
   const route = useRoute()
   const navigation = useNavigation()
   const { djId, djName } = route.params
 
-  const submitRequest = () => {
-    // add logic to create new booking in Firestore
+  const submitRequest = async () => {
+    const data = {
+      djId,
+      date: date,
+      name: name,
+      email: email,
+      address: eventAddress,
+      description: eventDescription
+    }
+
+    try {
+      const ref = firebase.firestore().collection('Bookings').doc()
+      const response = await ref.set(data)
+      console.log("Response", response)
+    } catch (error) {
+      console.log("Error", error)
+    }
 
     setModalVisible(!modalVisible);
   }
 
-  // address should be selected from address finder?
+  // address - Google Places Autocomplete API
 
-  // change hours to be a dropdown selection
+  // date, time and duration to be changed so user can see
+  // Djs availability calendar and select from there 
 
   return (
     <SafeAreaView>
@@ -44,7 +60,7 @@ const MakeBooking = () => {
       <ScrollView>
         <TextInput 
           value={date}
-          placeholder='Event date'
+          placeholder='Event date, time, duration'
           placeholderTextColor={'#737373'}
           style={styles.inputField}
           onChangeText={(text) => setDate(text)}
@@ -63,13 +79,6 @@ const MakeBooking = () => {
           autoCapitalize='none'
           style={styles.inputField}
           onChangeText={(text) => setEmail(text)}
-        />
-        <TextInput 
-          value={eventDuration}
-          placeholder='Duration (hours)'
-          placeholderTextColor={'#737373'}
-          style={styles.inputField}
-          onChangeText={(text) => setEventDuration(text)}
         />
         <TextInput 
           value={eventAddress}
