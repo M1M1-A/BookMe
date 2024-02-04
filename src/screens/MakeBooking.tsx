@@ -1,4 +1,14 @@
-import { View, Text, TextInput, Dimensions, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  Dimensions, 
+  StyleSheet, 
+  ScrollView, 
+  TouchableOpacity, 
+  Modal, 
+  Alert 
+} from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRoute, useNavigation } from '@react-navigation/native'
@@ -12,12 +22,16 @@ const MakeBooking = () => {
   const [ eventDescription, setEventDescription ] = useState<string>("")
   const [ eventAddress, setEventAddress] = useState<string>("")
   const [ eventDuration, setEventDuration ] = useState<string>("")
+  const [modalVisible, setModalVisible] = useState(false)  
   const route = useRoute()
   const navigation = useNavigation()
   const { djId, djName } = route.params
 
-  // onSubmit function to create new booking in firestore 
-  // and alert customer booking made and return to home 
+  const submitRequest = () => {
+    // add logic to create new booking in Firestore
+
+    setModalVisible(!modalVisible);
+  }
 
   // address should be selected from address finder?
 
@@ -75,10 +89,23 @@ const MakeBooking = () => {
           <TouchableOpacity onPress={navigation.goBack} style={styles.button}>
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity onPress={() => submitRequest()} style={styles.button}>
             <Text style={styles.buttonText}>Send Request</Text>
           </TouchableOpacity>
         </View>
+        <Modal visible={modalVisible} animationType="fade">
+          <View style={styles.modal}>
+            <Text style={styles.modalText}>Your request has been sent</Text>
+            <Text>Your booking reference is: 3Y68GD1</Text>
+            <Text>You will receive an email once your booking is confirmed.</Text>
+            <TouchableOpacity onPress={() => {
+              setModalVisible(!modalVisible);
+              navigation.goBack();
+            }}>
+              <Text>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   )
@@ -145,8 +172,16 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white'
+  },
+  modal: {
+    flex:1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  modalText: {
+    fontSize: 20,
+    margin: 10
   }
 })
-
 
 export default MakeBooking
