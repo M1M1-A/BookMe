@@ -56,8 +56,8 @@ export default function Home() {
             <Text style={styles.djName}>{item.name}</Text>
             <Text style={styles.djBio}>{item.bio}</Text>
             <View style={styles.genresContainer}>
-            {item.genres.map((genre)=> (
-                <Text style={styles.genresText}>{genre}</Text>
+            {item.genres.map((genre, index)=> (
+                <Text key={index}style={styles.genresText}>{genre}</Text>
             ))}      
             </View>
           </View>
