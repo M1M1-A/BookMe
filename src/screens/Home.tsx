@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, FlatList } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, FlatList, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from '../../config/firebase'
 import { useNavigation } from "@react-navigation/native";
 import AudioPlayer from "../components/audioPlayer";
 import { SearchBar } from "react-native-elements";
 import DropDownPicker from '../components/dropDownPicker'
+
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 export default function Home() {
   const [djs, setDjs] = useState([]);
@@ -52,12 +55,12 @@ export default function Home() {
         <View id="djCard" style={styles.djCard}>
           <Image source={{uri: item.images[0]}} style={styles.image}/>
           <AudioPlayer audioUrl={item.audio[0]}/>
-          <View id="djInfo">
+          <View>
             <Text style={styles.djName}>{item.name}</Text>
             <Text style={styles.djBio}>{item.bio}</Text>
             <View style={styles.genresContainer}>
             {item.genres.map((genre, index)=> (
-                <Text key={index}style={styles.genresText}>{genre}</Text>
+                <Text key={index} style={styles.genresText}>{genre}</Text>
             ))}      
             </View>
           </View>
@@ -111,29 +114,29 @@ const styles = StyleSheet.create({
   djCard: {
     padding: 10,
     alignSelf: 'center',
-    width: 450,
-    height: 800,
+    width: windowWidth * 1,
+    height: windowHeight * 0.85,
     backgroundColor: "white",
     borderRadius: 7,
     zIndex: 0
   },
   djName: {
     marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 8,
     marginRight: 10,
-    marginLeft: 20,
+    marginLeft: 10,
     fontWeight: 'bold',
     fontSize: 30
   },
   djBio: {
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 8,
+    marginBottom: 8,
     marginRight: 10,
-    marginLeft: 20
+    marginLeft: 10
   },
   image: {
-    width: 400,
-    height: 420,
+    width: windowWidth * 1,
+    height: windowHeight * 0.43,
     alignSelf: 'center',
     // marginBottom: 5
   },
@@ -154,8 +157,8 @@ const styles = StyleSheet.create({
   genresText: {
     paddingRight: 10,
     paddingTop: 10, 
-    paddingBottom: 10,
-    paddingLeft: 20,
+    paddingBottom: 8,
+    paddingLeft: 10,
     fontWeight: 'bold'
   }
 })

@@ -22,6 +22,7 @@ const MakeBooking = () => {
   const [date, setDate] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [contactNumber, setContactNumber] = useState<string>("")
   const [eventDescription, setEventDescription] = useState<string>("");
   const [street, setStreet] = useState<string>("");
   const [postcode, setPostcode] = useState<string>("")
@@ -34,11 +35,14 @@ const MakeBooking = () => {
   const submitRequest = async () => {
     const data = {
       djId,
-      date: date,
-      name: name,
-      email: email,
-      address: eventAddress,
+      date,
+      customerName: name,
+      customerEmail: email,
+      contactNumber,
+      eventStreet: street,
+      postcode,
       description: eventDescription,
+      bookingStatus: 'requested'
     };
 
     try {
@@ -89,6 +93,14 @@ const MakeBooking = () => {
           onChangeText={(text) => setEmail(text)}
         />
         <TextInput
+          value={contactNumber}
+          placeholder="Contact Number"
+          placeholderTextColor={"#737373"}
+          autoCapitalize="none"
+          style={styles.inputField}
+          onChangeText={(text) => setContactNumber(text)}
+        />
+        <TextInput
           value={street}
           placeholder="Event address 1st line"
           placeholderTextColor={"#737373"}
@@ -110,7 +122,8 @@ const MakeBooking = () => {
           style={styles.eventDescription}
           onChangeText={(text) => setEventDescription(text)}
         />
-        <View style={styles.buttonContainer}>
+      </ScrollView>
+      <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={navigation.goBack} style={styles.button}>
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
@@ -138,7 +151,6 @@ const MakeBooking = () => {
             </TouchableOpacity>
           </View>
         </Modal>
-      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -148,17 +160,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     alignSelf: "center",
-    marginTop: 20,
+    marginTop: 40,
   },
   djName: {
     fontSize: 50,
     fontWeight: "bold",
     alignSelf: "center",
-    marginBottom: 40,
+    marginBottom: 25,
   },
   inputField: {
     width: windowWidth * 0.8,
-    height: windowHeight * 0.06,
+    height: windowHeight * 0.05,
     borderBottomWidth: 2,
     borderBottomColor: "grey",
     alignSelf: "center",
@@ -181,7 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F7FB",
     width: windowWidth * 0.8,
     height: windowHeight * 0.2,
-    margin: 10,
+    marginTop: 10,
     alignSelf: "center",
     paddingBottom: 150,
     paddingLeft: 5,
