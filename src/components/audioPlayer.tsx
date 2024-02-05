@@ -1,7 +1,10 @@
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native'
 import Slider from "@react-native-community/slider"
 import React, { useEffect, useState } from 'react'
 import { Audio } from 'expo-av'
+
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 const AudioPlayer = ({audioUrl}) => {
   const [sound, setSound] = useState()
@@ -59,7 +62,7 @@ const AudioPlayer = ({audioUrl}) => {
         />
       </TouchableOpacity>
       <Slider
-        style={{ width: 300, height: 40 }}
+        style={{ width: 325, height: 40 }}
         minimumValue={0}
         maximumValue={duration}
         value={position}
@@ -76,8 +79,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'black',
-    height: 58,
-    width: 400,
+    height: windowHeight * 0.07,
+    width: windowWidth * 1,
     alignSelf: 'center'
   },
   buttons: {
