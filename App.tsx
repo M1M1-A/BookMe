@@ -8,6 +8,7 @@ import Home from "./src/screens/Home";
 import Login from "./src/screens/LogIn";
 import SignUp from "./src/screens/SignUp";
 import MakeBooking from "./src/screens/MakeBooking";
+import Profile from './src/screens/Profile'
 
 const Stack = createStackNavigator();
 const AuthenticatedUserContext = createContext({});
@@ -26,13 +27,14 @@ const AuthStack = () => {
 
   return (
     <Stack.Navigator
-      // initialRouteName="Login"
+      initialRouteName="Profile"
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name="Home" component={Home}/>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SignUp" component={SignUp} />
       <Stack.Screen name="MakeBooking" component={MakeBooking} />
+      <Stack.Screen name="Profile" component={Profile}/>
     </Stack.Navigator>
   );
 };
