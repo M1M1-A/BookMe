@@ -24,7 +24,10 @@ export default function LogIn() {
   const onHandleLogin = () => {
     if (email !== "" && password !== "") {
       signInWithEmailAndPassword(auth, email, password)
-        .then(() => console.log("Login successful"))
+        .then(() => {
+          navigation.navigate("Profile")
+          console.log("Login successful")
+        })
         .catch((error) => Alert.alert("Login error", error.message));
     }
   };
