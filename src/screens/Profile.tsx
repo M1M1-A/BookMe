@@ -53,11 +53,15 @@ const Profile = () => {
     setEdit(false);
   };
 
-  const handleDeleteImage = (index) => {
-    const updatedImages = images.splice(index, 1)
-    setImages(updatedImages)
-  }
+  const handleDeleteImage = (image, index) => {
+    const updatedImages = images.filter((_, i) => i !== index); 
+    setImages(updatedImages); 
 
+    const fileRef = firebase.storage().refFromURL(image)
+    fileRef.delete()
+    console.log("Image deleted")
+  };
+  
   const profileInfo = [
     { label: "Name", value: name, onChangeText: setName },
     { label: "Bio", value: bio, onChangeText: setBio },
@@ -92,23 +96,23 @@ const Profile = () => {
           )}
         </View>
       ))}
-      { images.map((image, index) => (
-        <View>
-          <View style={styles.imageHeading}>
-            <Text style={styles.label}>Images</Text>
-            <Text style={{fontSize: 30}}>+</Text>
-          </View>
+        <View style={styles.imageHeading}>
+          <Text style={styles.label}>Images</Text>
+          <Text style={{fontSize: 30}}>+</Text>
+        </View>
+        <View style={styles.mainImageContainer} >
+        { images.map((image, index) => (
           <View style={styles.imageContainer} key={index}>
             <Image 
               source={{uri: image}}
               style={{width: 60, height: 60}}
             />
+            <TouchableOpacity onPress={() => handleDeleteImage(image, index)}>
+              <Text>X</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => handleDeleteImage(index)}>
-            <Text>X</Text>
-          </TouchableOpacity>
+        ))}
         </View>
-      ))}
       {/* upload image */}
       {edit ? (
         <TouchableOpacity onPress={handleSave} style={styles.button}>
@@ -147,9 +151,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#F7F8FB",
     height: 40,
     width: 280,
-    fontSize: 18,
+    fontSize: 16,
     borderRadius: 10,
-    // fontWeight: "bold",
     padding: 10,
     marginRight: 10,
     marginBottom: 10,
@@ -172,11 +175,16 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'column',
+    margin: 10
   }, 
   imageHeading: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  mainImageContainer: {
+    display: 'flex',
+    flexDirection: 'row',
   }
 });
