@@ -4,6 +4,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Image
 } from "react-native";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthenticatedUserContext } from "../../App";
@@ -29,8 +30,8 @@ const Profile = () => {
     const fetchDj = async () => {
       try {
         const db = firebase.firestore()
-        const q2 = query(collection(db, "DJs"), where("userId", "==", loggedInUserId));
-        const querySnapshot = await getDocs(q2);
+        const q = query(collection(db, "DJs"), where("userId", "==", loggedInUserId));
+        const querySnapshot = await getDocs(q);
         const dj = querySnapshot.docs[0].data()
         setName(dj.name)
         setBio(dj.bio)
@@ -51,6 +52,11 @@ const Profile = () => {
   const handleSave = () => {
     setEdit(false);
   };
+
+  const handleDeleteImage = (index) => {
+    const updatedImages = images.splice(index, 1)
+    setImages(updatedImages)
+  }
 
   const profileInfo = [
     { label: "Name", value: name, onChangeText: setName },
@@ -86,6 +92,24 @@ const Profile = () => {
           )}
         </View>
       ))}
+      { images.map((image, index) => (
+        <View>
+          <View style={styles.imageHeading}>
+            <Text style={styles.label}>Images</Text>
+            <Text style={{fontSize: 30}}>+</Text>
+          </View>
+          <View style={styles.imageContainer} key={index}>
+            <Image 
+              source={{uri: image}}
+              style={{width: 60, height: 60}}
+            />
+          </View>
+          <TouchableOpacity onPress={() => handleDeleteImage(index)}>
+            <Text>X</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+      {/* upload image */}
       {edit ? (
         <TouchableOpacity onPress={handleSave} style={styles.button}>
           <Text style={styles.buttonText}>Save</Text>
@@ -146,4 +170,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 20,
   },
+  imageContainer: {
+    display: 'flex',
+    flexDirection: 'row'
+  }, 
+  imageHeading: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  }
 });
