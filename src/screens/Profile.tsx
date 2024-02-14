@@ -11,12 +11,13 @@ import { AuthenticatedUserContext } from "../../App";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from "../../config/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import * as ImagePicker from 'expo-image-picker'
 
 const Profile = () => {
   const { user } = useContext(AuthenticatedUserContext);
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
-  const [images, setImages] = useState<URL[]>([]);
+  const [images, setImages] = useState<string[]>([]);
   const [audio, setAudio] = useState<string>();
   const [genres, setGenres] = useState<string>("");
   const [instagramLink, setInstagramLink] = useState<string>("");
@@ -47,7 +48,7 @@ const Profile = () => {
     };
 
     fetchDj();
-  }, [loggedInUserId]); 
+  }, [loggedInUserId, images]); 
 
   const handleSave = () => {
     setEdit(false);
@@ -62,6 +63,39 @@ const Profile = () => {
     console.log("Image deleted")
   };
   
+  const handleImageUpload = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+  
+    if (!result.cancelled) {
+      const uri = result.assets[0].uri;
+      const imageName = uri.substring(uri.lastIndexOf('/') + 1);
+      const storageRef = firebase.storage().ref(`DJs/${name}/${imageName}`);
+  
+      const response = await fetch(uri);
+      const blob = await response.blob();
+  
+      try {
+        await storageRef.put(blob);
+  
+        const downloadURL = await storageRef.getDownloadURL();
+        console.log(downloadURL)
+  
+        // Update the state with the new image URL
+        setImages([...images, downloadURL]);
+        console.log(images)
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    }
+  };
+
+  // onSave add the images array including new urls to the DJs document
+
   const profileInfo = [
     { label: "Name", value: name, onChangeText: setName },
     { label: "Bio", value: bio, onChangeText: setBio },
@@ -98,7 +132,10 @@ const Profile = () => {
       ))}
         <View style={styles.imageHeading}>
           <Text style={styles.label}>Images</Text>
-          <Text style={{fontSize: 30}}>+</Text>
+          {/* upload image */}
+          <TouchableOpacity onPress={handleImageUpload}>
+            <Text style={{fontSize: 30}}>+</Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.mainImageContainer} >
         { images.map((image, index) => (
@@ -113,7 +150,6 @@ const Profile = () => {
           </View>
         ))}
         </View>
-      {/* upload image */}
       {edit ? (
         <TouchableOpacity onPress={handleSave} style={styles.button}>
           <Text style={styles.buttonText}>Save</Text>
