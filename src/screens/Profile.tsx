@@ -19,7 +19,7 @@ const Profile = () => {
   const [bio, setBio] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [audio, setAudio] = useState<string>();
-  const [genres, setGenres] = useState<string>("");
+  const [genres, setGenres] = useState<string[]>([]);
   const [instagramLink, setInstagramLink] = useState<string>("");
   const [soundcloudLink, setSoundcloudLink] = useState<string>("");
   const [availability, setAvailability] = useState("");
@@ -48,7 +48,7 @@ const Profile = () => {
     };
 
     fetchDj();
-  }, [loggedInUserId, images]); 
+  }, [loggedInUserId]); 
 
   const handleSave = () => {
     setEdit(false);
@@ -83,11 +83,10 @@ const Profile = () => {
         await storageRef.put(blob);
   
         const downloadURL = await storageRef.getDownloadURL();
-        console.log(downloadURL)
+        const newImages = [...images, downloadURL]
   
-        // Update the state with the new image URL
-        setImages([...images, downloadURL]);
-        console.log(images)
+        setImages(newImages)
+        console.log("Image uploaded")
       } catch (error) {
         console.error('Error uploading image:', error);
       }
@@ -110,7 +109,7 @@ const Profile = () => {
       onChangeText: setSoundcloudLink,
     },
     { label: "Audio link", value: audio, onChangeText: setAudio },
-    { label: "Genres", value: genres, onChangeText: setGenres },
+    { label: "Genres", value: `${genres} `, onChangeText: setGenres },
   ];
 
   return (
@@ -142,7 +141,7 @@ const Profile = () => {
           <View style={styles.imageContainer} key={index}>
             <Image 
               source={{uri: image}}
-              style={{width: 60, height: 60}}
+              style={{width: 60, height: 70}}
             />
             <TouchableOpacity onPress={() => handleDeleteImage(image, index)}>
               <Text>X</Text>
