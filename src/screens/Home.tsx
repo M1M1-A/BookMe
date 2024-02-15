@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, FlatList, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from '../../config/firebase'

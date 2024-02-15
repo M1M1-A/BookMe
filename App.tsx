@@ -8,9 +8,11 @@ import Home from "./src/screens/Home";
 import Login from "./src/screens/LogIn";
 import SignUp from "./src/screens/SignUp";
 import MakeBooking from "./src/screens/MakeBooking";
+import Profile from './src/screens/Profile'
+import Form from "./src/screens/Form";
 
 const Stack = createStackNavigator();
-const AuthenticatedUserContext = createContext({});
+export const AuthenticatedUserContext = createContext({});
 
 const AuthenticatedUserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -26,13 +28,15 @@ const AuthStack = () => {
 
   return (
     <Stack.Navigator
-      // initialRouteName="Login"
+      initialRouteName="Login"
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name="Home" component={Home}/>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SignUp" component={SignUp} />
       <Stack.Screen name="MakeBooking" component={MakeBooking} />
+      <Stack.Screen name="Profile" component={Profile}/>
+      <Stack.Screen name="Form" component={Form} />
     </Stack.Navigator>
   );
 };
@@ -42,6 +46,7 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="MakeBooking" component={MakeBooking} />
+      <Stack.Screen name="Profile" component={Profile}/>
     </Stack.Navigator>
   );
 };
