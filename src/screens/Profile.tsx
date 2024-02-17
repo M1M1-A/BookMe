@@ -12,13 +12,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from "../../config/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import * as ImagePicker from 'expo-image-picker'
+import * as DocumentPicker from 'expo-document-picker'
 
 const Profile = () => {
   const { user } = useContext(AuthenticatedUserContext);
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [images, setImages] = useState<string[]>([]);
-  const [audio, setAudio] = useState<string>();
+  const [audio, setAudio] = useState<string>("");
+  const [audioFileName, setAudioFileName] = useState<string>("")
   const [genres, setGenres] = useState<string[]>([]);
   const [instagramLink, setInstagramLink] = useState<string>("");
   const [soundcloudLink, setSoundcloudLink] = useState<string>("");
@@ -41,6 +43,8 @@ const Profile = () => {
         setGenres(dj.genres)
         setInstagramLink(dj.instagram)
         setSoundcloudLink(dj.soundcloud)
+
+        //how to get filename from audio file path and setAudioFileName()
 
       } catch (error) {
         console.error("Error fetching document: ", error);
@@ -93,6 +97,34 @@ const Profile = () => {
     }
   };
 
+  const handleAudioUpload = async () => {
+    const file = await DocumentPicker.getDocumentAsync({
+      type: "audio/mpeg"
+    })
+
+    if (file) {
+      const uri = file.assets[0].uri;
+      const audioFileName = file.assets[0].name;
+      setAudioFileName(audioFileName)
+      const storageRef = firebase.storage().ref(`DJs/${name}/${audioFileName}`);
+  
+      const response = await fetch(uri);
+      const blob = await response.blob();
+  
+      try {
+        await storageRef.put(blob);
+  
+        const downloadURL = await storageRef.getDownloadURL();
+  
+        setAudio(downloadURL)
+        console.log("Audio uploaded")
+      } catch (error) {
+        console.error('Error uploading audio:', error);
+      }
+    }
+  }
+
+
   // onSave add the images array including new urls to the DJs document
 
   const profileInfo = [
@@ -108,7 +140,6 @@ const Profile = () => {
       value: soundcloudLink,
       onChangeText: setSoundcloudLink,
     },
-    { label: "Audio link", value: audio, onChangeText: setAudio },
     { label: "Genres", value: `${genres} `, onChangeText: setGenres },
   ];
 
@@ -129,9 +160,19 @@ const Profile = () => {
           )}
         </View>
       ))}
+      {/* audio upload */}
+        <View style={styles.imageHeading}>
+          <Text style={styles.label}>Audio File</Text>
+          <TouchableOpacity onPress={handleAudioUpload}>
+            <Text style={{fontSize: 30}}>+</Text>
+          </TouchableOpacity>
+        </View>
+        { audio && (
+          <Text>File uploaded: {audioFileName}</Text>
+        )}
+      {/* audio upload */}
         <View style={styles.imageHeading}>
           <Text style={styles.label}>Images</Text>
-          {/* upload image */}
           <TouchableOpacity onPress={handleImageUpload}>
             <Text style={{fontSize: 30}}>+</Text>
           </TouchableOpacity>
