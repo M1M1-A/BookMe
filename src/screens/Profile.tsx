@@ -44,8 +44,12 @@ const Profile = () => {
         setInstagramLink(dj.instagram)
         setSoundcloudLink(dj.soundcloud)
 
-        //how to get filename from audio file path and setAudioFileName()
-
+        const decodedUrl = decodeURIComponent(audio);
+        const startIndex = decodedUrl.lastIndexOf('/') + 1;
+        const endIndex = decodedUrl.indexOf('?');
+        const filename = decodedUrl.substring(startIndex, endIndex);
+        setAudioFileName(filename)
+        
       } catch (error) {
         console.error("Error fetching document: ", error);
       }
@@ -124,7 +128,6 @@ const Profile = () => {
     }
   }
 
-
   // onSave add the images array including new urls to the DJs document
 
   const profileInfo = [
@@ -161,35 +164,37 @@ const Profile = () => {
         </View>
       ))}
       {/* audio upload */}
-        <View style={styles.imageHeading}>
-          <Text style={styles.label}>Audio File</Text>
-          <TouchableOpacity onPress={handleAudioUpload}>
-            <Text style={{fontSize: 30}}>+</Text>
-          </TouchableOpacity>
-        </View>
-        { audio && (
-          <Text>File uploaded: {audioFileName}</Text>
-        )}
+      <View style={styles.imageHeading}>
+        <Text style={styles.label}>Audio File</Text>
+        <TouchableOpacity onPress={handleAudioUpload}>
+          <Text style={{ fontSize: 30 }}>+</Text>
+        </TouchableOpacity>
+      </View>
+      {audio && (
+        <Text>
+          File: {audioFileName ? audioFileName : "No audio uploaded"}
+        </Text>
+      )}
       {/* audio upload */}
-        <View style={styles.imageHeading}>
-          <Text style={styles.label}>Images</Text>
-          <TouchableOpacity onPress={handleImageUpload}>
-            <Text style={{fontSize: 30}}>+</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.mainImageContainer} >
-        { images.map((image, index) => (
+      <View style={styles.imageHeading}>
+        <Text style={styles.label}>Images</Text>
+        <TouchableOpacity onPress={handleImageUpload}>
+          <Text style={{ fontSize: 30 }}>+</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.mainImageContainer}>
+        {images.map((image, index) => (
           <View style={styles.imageContainer} key={index}>
-            <Image 
-              source={{uri: image}}
-              style={{width: 60, height: 70}}
+            <Image
+              source={{ uri: image }}
+              style={{ width: 60, height: 70 }}
             />
             <TouchableOpacity onPress={() => handleDeleteImage(image, index)}>
               <Text>X</Text>
             </TouchableOpacity>
           </View>
         ))}
-        </View>
+      </View>
       {edit ? (
         <TouchableOpacity onPress={handleSave} style={styles.button}>
           <Text style={styles.buttonText}>Save</Text>
