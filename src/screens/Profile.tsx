@@ -44,12 +44,12 @@ const Profile = () => {
         setInstagramLink(dj.instagram)
         setSoundcloudLink(dj.soundcloud)
 
-        const decodedUrl = decodeURIComponent(audio);
+        const decodedUrl = decodeURIComponent(dj.audio);
         const startIndex = decodedUrl.lastIndexOf('/') + 1;
         const endIndex = decodedUrl.indexOf('?');
         const filename = decodedUrl.substring(startIndex, endIndex);
         setAudioFileName(filename)
-        
+
       } catch (error) {
         console.error("Error fetching document: ", error);
       }
