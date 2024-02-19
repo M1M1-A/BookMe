@@ -16,7 +16,7 @@ export default function Home() {
   const navigation = useNavigation()
 
   type djData = {
-    audio: string[],
+    audio: string,
     availability: string,
     bio: string,
     email: string,
@@ -54,7 +54,7 @@ export default function Home() {
       renderItem={({item}) => (
         <View id="djCard" style={styles.djCard}>
           <Image source={{uri: item.images[0]}} style={styles.image}/>
-          <AudioPlayer audioUrl={item.audio[0]}/>
+          <AudioPlayer audioUrl={item.audio}/>
           <View>
             <Text style={styles.djName}>{item.name}</Text>
             <Text style={styles.djBio}>{item.bio}</Text>
