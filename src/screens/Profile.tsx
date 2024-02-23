@@ -4,7 +4,8 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image
+  Image,
+  ScrollView
 } from "react-native";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthenticatedUserContext } from "../../App";
@@ -13,6 +14,7 @@ import { firebase } from "../../config/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
+import SetAvailabilityCalendar from "../components/setAvailabilityCalendar"
 
 const Profile = () => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -43,6 +45,7 @@ const Profile = () => {
         setGenres(dj.genres)
         setInstagramLink(dj.instagram)
         setSoundcloudLink(dj.soundcloud)
+        setAvailability(dj.availability)
 
         const decodedUrl = decodeURIComponent(dj.audio);
         const startIndex = decodedUrl.lastIndexOf('/') + 1;
@@ -143,11 +146,11 @@ const Profile = () => {
       value: soundcloudLink,
       onChangeText: setSoundcloudLink,
     },
-    { label: "Genres", value: `${genres} `, onChangeText: setGenres },
+    { label: "Genres", value: genres.join(", "), onChangeText: setGenres },
   ];
-
+  
   return (
-    <SafeAreaView style={styles.mainContainer}>
+    <ScrollView style={styles.mainContainer}>
       <Text style={styles.heading}>Your Profile</Text>
       {profileInfo.map((item) => (
         <View key={item.label} style={{ flexDirection: "column" }}>
@@ -195,6 +198,10 @@ const Profile = () => {
           </View>
         ))}
       </View>
+      <View>
+        <Text style={styles.availabiltyHeading}>Set your availability</Text>
+        <SetAvailabilityCalendar loggedInUserId={loggedInUserId} availability={availability}/>
+      </View>
       {edit ? (
         <TouchableOpacity onPress={handleSave} style={styles.button}>
           <Text style={styles.buttonText}>Save</Text>
@@ -204,7 +211,7 @@ const Profile = () => {
           <Text style={styles.buttonText}>Edit</Text>
         </TouchableOpacity>
       )}
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -267,5 +274,10 @@ const styles = StyleSheet.create({
   mainImageContainer: {
     display: 'flex',
     flexDirection: 'row',
+  },
+  availabiltyHeading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    margin: 10
   }
 });
