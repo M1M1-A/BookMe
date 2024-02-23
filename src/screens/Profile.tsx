@@ -15,6 +15,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import SetAvailabilityCalendar from "../components/setAvailabilityCalendar"
+import GenresDropdown from '../components/genresDropdown'
 
 const Profile = () => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -63,6 +64,10 @@ const Profile = () => {
 
   const handleSave = () => {
     setEdit(false);
+  };
+
+  const handleGenresChange = (selectedGenres) => {
+    setGenres(selectedGenres); 
   };
 
   const handleDeleteImage = (image, index) => {
@@ -131,6 +136,7 @@ const Profile = () => {
     }
   }
 
+  console.log(genres)
   // onSave add the images array including new urls to the DJs document
 
   const profileInfo = [
@@ -166,6 +172,10 @@ const Profile = () => {
           )}
         </View>
       ))}
+      <View>
+        <Text>Genres</Text>
+        <GenresDropdown onGenresSelected={handleGenresChange}/>
+      </View>
       {/* audio upload */}
       <View style={styles.imageHeading}>
         <Text style={styles.label}>Audio File</Text>
