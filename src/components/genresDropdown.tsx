@@ -1,31 +1,31 @@
 import { View, Text } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import MultiSelect from 'react-native-multiple-select'
 
-const GenresDropdown = ({onGenresSelected}) => {
-  const [selectedGenres, setSelectedGenres] = useState([])
-  const [genres, setGenres] = useState([
-    { id: 1, name: "RnB" },
-    { id: 2, name: "Hip Hop" },
-    { id: 3, name: "Afrobeats" },
-    { id: 4, name: "Soul" }
-  ]);
+const GenresDropdown = ({onGenresSelected, currentGenres}) => {
+  const [selectedGenres, setSelectedGenres] = useState()
+  const genres = [
+    { name: "RnB" },
+    { name: "Hip Hop" },
+    { name: "Afrobeats" },
+    { name: "Soul" }
+  ];
+
+  useEffect(() => {
+    setSelectedGenres(currentGenres)
+  }, [currentGenres])
 
   const handleGenresChange = (selectedGenres) => {
-    const selectedGenreNames = selectedGenres.map(item => {
-      const genre = genres.find(genre => genre.id === item);
-      return genre ? genre.name : '';
-    });
     setSelectedGenres(selectedGenres);
-    onGenresSelected(selectedGenreNames);
+    onGenresSelected(selectedGenres);
   };
 
   return (
     <View>
-      <Text>Select multiple options:</Text>
+      {/* <Text>Select multiple options:</Text> */}
       <MultiSelect 
         items={genres}
-        uniqueKey="id"
+        uniqueKey="name"
         onSelectedItemsChange={handleGenresChange}
         selectedItems={selectedGenres}
         selectText="Select Genres"

@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  ScrollView
+  ScrollView,
+  Alert
 } from "react-native";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthenticatedUserContext } from "../../App";
@@ -80,33 +81,37 @@ const Profile = () => {
   };
   
   const handleImageUpload = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1
-    });
-  
-    if (!result.cancelled) {
-      const uri = result.assets[0].uri;
-      const imageName = uri.substring(uri.lastIndexOf('/') + 1);
-      const storageRef = firebase.storage().ref(`DJs/${name}/${imageName}`);
-  
-      const response = await fetch(uri);
-      const blob = await response.blob();
-  
-      try {
-        await storageRef.put(blob);
-  
-        const downloadURL = await storageRef.getDownloadURL();
-        const newImages = [...images, downloadURL]
-  
-        setImages(newImages)
-        console.log("Image uploaded")
-      } catch (error) {
-        console.error('Error uploading image:', error);
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1
+      });
+    
+      if (!result.cancelled) {
+        const uri = result.assets[0].uri;
+        const imageName = uri.substring(uri.lastIndexOf('/') + 1);
+        const storageRef = firebase.storage().ref(`DJs/${name}/${imageName}`);
+    
+        const response = await fetch(uri);
+        const blob = await response.blob();
+    
+        try {
+          await storageRef.put(blob);
+    
+          const downloadURL = await storageRef.getDownloadURL();
+          const newImages = [...images, downloadURL]
+    
+          if (newImages.length <= 4) {
+            setImages(newImages);
+            console.log("Image uploaded");
+          } else {
+            Alert.alert("You cannot upload more than 4 images");
+          }        
+        } catch (error) {
+          console.error('Error uploading image:', error);
+        }
       }
-    }
   };
 
   const handleAudioUpload = async () => {
@@ -136,7 +141,7 @@ const Profile = () => {
     }
   }
 
-  console.log(genres)
+  // console.log("Profile", availability)
   // onSave add the images array including new urls to the DJs document
 
   const profileInfo = [
@@ -152,7 +157,6 @@ const Profile = () => {
       value: soundcloudLink,
       onChangeText: setSoundcloudLink,
     },
-    { label: "Genres", value: genres.join(", "), onChangeText: setGenres },
   ];
   
   return (
@@ -174,14 +178,16 @@ const Profile = () => {
       ))}
       <View>
         <Text>Genres</Text>
-        <GenresDropdown onGenresSelected={handleGenresChange}/>
+        <GenresDropdown onGenresSelected={handleGenresChange} currentGenres={genres}/>
       </View>
       {/* audio upload */}
       <View style={styles.imageHeading}>
         <Text style={styles.label}>Audio File</Text>
+      {edit && (
         <TouchableOpacity onPress={handleAudioUpload}>
           <Text style={{ fontSize: 30 }}>+</Text>
         </TouchableOpacity>
+      )}
       </View>
       {audio && (
         <Text>
@@ -191,9 +197,11 @@ const Profile = () => {
       {/* audio upload */}
       <View style={styles.imageHeading}>
         <Text style={styles.label}>Images</Text>
+      {edit && (
         <TouchableOpacity onPress={handleImageUpload}>
           <Text style={{ fontSize: 30 }}>+</Text>
         </TouchableOpacity>
+      )}
       </View>
       <View style={styles.mainImageContainer}>
         {images.map((image, index) => (
@@ -202,15 +210,13 @@ const Profile = () => {
               source={{ uri: image }}
               style={{ width: 60, height: 70 }}
             />
-            <TouchableOpacity onPress={() => handleDeleteImage(image, index)}>
-              <Text>X</Text>
-            </TouchableOpacity>
+            {edit && (
+              <TouchableOpacity onPress={() => handleDeleteImage(image, index)}>
+                <Text>X</Text>
+              </TouchableOpacity>
+            )}
           </View>
         ))}
-      </View>
-      <View>
-        <Text style={styles.availabiltyHeading}>Set your availability</Text>
-        <SetAvailabilityCalendar loggedInUserId={loggedInUserId} availability={availability}/>
       </View>
       {edit ? (
         <TouchableOpacity onPress={handleSave} style={styles.button}>
@@ -221,6 +227,13 @@ const Profile = () => {
           <Text style={styles.buttonText}>Edit</Text>
         </TouchableOpacity>
       )}
+      <View>
+        <Text style={styles.availabiltyHeading}>Set your availability</Text>
+        <SetAvailabilityCalendar 
+          loggedInUserId={loggedInUserId} 
+          initialAvailability={availability}
+          />
+      </View>
     </ScrollView>
   );
 };
@@ -248,7 +261,7 @@ const styles = StyleSheet.create({
   inputField: {
     backgroundColor: "#F7F8FB",
     height: 40,
-    width: 280,
+    width: 320,
     fontSize: 16,
     borderRadius: 10,
     padding: 10,
@@ -263,18 +276,22 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 40,
-    width: 70,
+    width: 150,
     fontSize: 20,
     backgroundColor: "#f57c00",
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 20,
+    marginBottom: 20,
+    alignSelf: 'center'
   },
   imageContainer: {
     display: 'flex',
     flexDirection: 'column',
-    margin: 10
+    margin: 10,
+    width: 250,
+    height: 100
   }, 
   imageHeading: {
     display: 'flex',
