@@ -12,7 +12,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { AuthenticatedUserContext } from "../../App";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from "../../config/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import SetAvailabilityCalendar from "../components/setAvailabilityCalendar"
@@ -63,7 +63,30 @@ const Profile = () => {
     fetchDj();
   }, [loggedInUserId]); 
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    try {
+      const db = firebase.firestore()
+      const q = query(collection(db, "DJs"), where("userId", "==", loggedInUserId))
+      const querySnapshot = await getDocs(q)
+      const djDoc = querySnapshot.docs[0]
+  
+      if (djDoc) {
+        const djRef = doc(db, "DJs", djDoc.id)
+        await updateDoc(djRef, { 
+          name,
+          bio,
+          images,
+          genres,
+          instagram: instagramLink,
+          soundcloud: soundcloudLink,
+        })
+        console.log("DJ doc updated")
+      }
+      // add else here if no djDoc - create new doc with userId and all fields
+    } catch (error) {
+      console.error("Error updating DJ doc", error)
+    }
+
     setEdit(false);
   };
 
@@ -141,9 +164,6 @@ const Profile = () => {
     }
   }
 
-  // console.log("Profile", availability)
-  // onSave add the images array including new urls to the DJs document
-
   const profileInfo = [
     { label: "Name", value: name, onChangeText: setName },
     { label: "Bio", value: bio, onChangeText: setBio },
@@ -168,7 +188,7 @@ const Profile = () => {
           {edit ? (
             <TextInput
               value={item.value}
-              style={styles.inputField}
+              style={styles.editableInputField}
               onChangeText={item.onChangeText}
             />
           ) : (
@@ -177,11 +197,11 @@ const Profile = () => {
         </View>
       ))}
       <View>
-        <Text>Genres</Text>
+        <Text style={styles.label}>Genres</Text>
         <GenresDropdown onGenresSelected={handleGenresChange} currentGenres={genres}/>
       </View>
       {/* audio upload */}
-      <View style={styles.imageHeading}>
+      <View style={styles.audioHeading}>
         <Text style={styles.label}>Audio File</Text>
       {edit && (
         <TouchableOpacity onPress={handleAudioUpload}>
@@ -190,7 +210,7 @@ const Profile = () => {
       )}
       </View>
       {audio && (
-        <Text>
+        <Text style={styles.audioFile}>
           File: {audioFileName ? audioFileName : "No audio uploaded"}
         </Text>
       )}
@@ -208,7 +228,7 @@ const Profile = () => {
           <View style={styles.imageContainer} key={index}>
             <Image
               source={{ uri: image }}
-              style={{ width: 60, height: 70 }}
+              style={{ width: 60, height: 70, borderRadius: 3 }}
             />
             {edit && (
               <TouchableOpacity onPress={() => handleDeleteImage(image, index)}>
@@ -259,7 +279,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   inputField: {
-    backgroundColor: "#F7F8FB",
+    backgroundColor: "white",
+    height: 40,
+    width: 320,
+    fontSize: 16,
+    borderRadius: 10,
+    padding: 10,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  editableInputField: {
+    backgroundColor: "#fff3e3",
     height: 40,
     width: 320,
     fontSize: 16,
@@ -286,11 +316,23 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignSelf: 'center'
   },
+  audioHeading: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+    marginTop: 5
+  },
+  audioFile: {
+    alignSelf: "flex-start",
+    marginBottom: 10,
+    fontSize: 16,
+  },
   imageContainer: {
     display: 'flex',
     flexDirection: 'column',
     margin: 10,
-    width: 250,
+    width: 60,
     height: 100
   }, 
   imageHeading: {
