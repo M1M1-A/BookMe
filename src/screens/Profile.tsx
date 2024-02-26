@@ -12,7 +12,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { AuthenticatedUserContext } from "../../App";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from "../../config/firebase";
-import { collection, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, updateDoc, doc, addDoc } from "firebase/firestore";
 import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import SetAvailabilityCalendar from "../components/setAvailabilityCalendar"
@@ -81,8 +81,18 @@ const Profile = () => {
           soundcloud: soundcloudLink,
         })
         console.log("DJ doc updated")
+      } else {
+        await addDoc(collection(db, "DJs"), {
+          name,
+          bio,
+          images,
+          genres,
+          instagram: instagramLink,
+          soundcloud: soundcloudLink,
+          userId: loggedInUserId
+        }) 
+        console.log("New doc created for DJ")
       }
-      // add else here if no djDoc - create new doc with userId and all fields
     } catch (error) {
       console.error("Error updating DJ doc", error)
     }
@@ -209,11 +219,9 @@ const Profile = () => {
         </TouchableOpacity>
       )}
       </View>
-      {audio && (
         <Text style={styles.audioFile}>
           File: {audioFileName ? audioFileName : "No audio uploaded"}
         </Text>
-      )}
       {/* audio upload */}
       <View style={styles.imageHeading}>
         <Text style={styles.label}>Images</Text>
@@ -281,7 +289,7 @@ const styles = StyleSheet.create({
   inputField: {
     backgroundColor: "white",
     height: 40,
-    width: 320,
+    width: 340,
     fontSize: 16,
     borderRadius: 10,
     padding: 10,

@@ -22,7 +22,6 @@ const GenresDropdown = ({onGenresSelected, currentGenres}) => {
 
   return (
     <View>
-      {/* <Text>Select multiple options:</Text> */}
       <MultiSelect 
         items={genres}
         uniqueKey="name"

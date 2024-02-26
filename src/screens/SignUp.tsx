@@ -26,6 +26,7 @@ export default function Signup() {
       createUserWithEmailAndPassword(auth, email, password)
         .then(() => console.log("Signup success"))
         .catch((err) => Alert.alert("Login error", err.message));
+      navigation.navigate("Login")
     }
   };
 
