@@ -6,7 +6,8 @@ import {
   StyleSheet,
   Image,
   ScrollView,
-  Alert
+  Alert,
+  FlatList
 } from "react-native";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthenticatedUserContext } from "../../App";
@@ -190,79 +191,92 @@ const Profile = () => {
   ];
   
   return (
-    <ScrollView style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
       <Text style={styles.heading}>Your Profile</Text>
-      {profileInfo.map((item) => (
-        <View key={item.label} style={{ flexDirection: "column" }}>
-          <Text style={styles.label}>{item.label}</Text>
-          {edit ? (
-            <TextInput
-              value={item.value}
-              style={styles.editableInputField}
-              onChangeText={item.onChangeText}
-            />
-          ) : (
-            <Text style={styles.inputField}>{item.value}</Text>
-          )}
-        </View>
-      ))}
-      <View>
-        <Text style={styles.label}>Genres</Text>
-        <GenresDropdown onGenresSelected={handleGenresChange} currentGenres={genres}/>
-      </View>
-      {/* audio upload */}
-      <View style={styles.audioHeading}>
-        <Text style={styles.label}>Audio File</Text>
-      {edit && (
-        <TouchableOpacity onPress={handleAudioUpload}>
-          <Text style={{ fontSize: 30 }}>+</Text>
-        </TouchableOpacity>
-      )}
-      </View>
-        <Text style={styles.audioFile}>
-          File: {audioFileName ? audioFileName : "No audio uploaded"}
-        </Text>
-      {/* audio upload */}
-      <View style={styles.imageHeading}>
-        <Text style={styles.label}>Images</Text>
-      {edit && (
-        <TouchableOpacity onPress={handleImageUpload}>
-          <Text style={{ fontSize: 30 }}>+</Text>
-        </TouchableOpacity>
-      )}
-      </View>
-      <View style={styles.mainImageContainer}>
-        {images.map((image, index) => (
-          <View style={styles.imageContainer} key={index}>
-            <Image
-              source={{ uri: image }}
-              style={{ width: 60, height: 70, borderRadius: 3 }}
-            />
-            {edit && (
-              <TouchableOpacity onPress={() => handleDeleteImage(image, index)}>
-                <Text>X</Text>
-              </TouchableOpacity>
+      <FlatList
+        data={profileInfo}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View key={item.label} style={{ flexDirection: "column" }}>
+            <Text style={styles.label}>{item.label}</Text>
+            {edit ? (
+              <TextInput
+                value={item.value}
+                style={styles.editableInputField}
+                onChangeText={item.onChangeText}
+              />
+            ) : (
+              <Text style={styles.inputField}>{item.value}</Text>
             )}
           </View>
-        ))}
-      </View>
-      {edit ? (
-        <TouchableOpacity onPress={handleSave} style={styles.button}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity onPress={() => setEdit(true)} style={styles.button}>
-          <Text style={styles.buttonText}>Edit</Text>
-        </TouchableOpacity>
-      )}
-      <View>
-        <Text style={styles.availabiltyHeading}>Set your availability</Text>
-        <SetAvailabilityCalendar 
-          loggedInUserId={loggedInUserId} 
-          initialAvailability={availability}
-          />
-      </View>
-    </ScrollView>
+        )}
+        ListFooterComponent={
+          <>
+            <View>
+              <Text style={styles.label}>Genres</Text>
+              <GenresDropdown onGenresSelected={handleGenresChange} currentGenres={genres}/>
+            </View>
+            {/* audio upload */}
+            <View style={styles.audioHeading}>
+              <Text style={styles.label}>Audio File</Text>
+            {edit && (
+              <TouchableOpacity onPress={handleAudioUpload}>
+                <Text style={{ fontSize: 30 }}>+</Text>
+              </TouchableOpacity>
+            )}
+            </View>
+              <Text style={styles.audioFile}>
+                File: {audioFileName ? audioFileName : "No audio uploaded"}
+              </Text>
+            {/* audio upload */}
+            <View style={styles.imageHeading}>
+              <Text style={styles.label}>Images</Text>
+            {edit && (
+              <TouchableOpacity onPress={handleImageUpload}>
+                <Text style={{ fontSize: 30 }}>+</Text>
+              </TouchableOpacity>
+            )}
+            </View>
+            <View style={styles.mainImageContainer}>
+              {images.map((image, index) => (
+                <View style={styles.imageContainer} key={index}>
+                  <Image
+                    source={{ uri: image }}
+                    style={{ width: 60, height: 70, borderRadius: 3 }}
+                  />
+                  {edit && (
+                    <TouchableOpacity onPress={() => handleDeleteImage(image, index)}>
+                      <Text>X</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ))}
+            </View>
+            {edit ? (
+              // <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+              //   <TouchableOpacity onPress={() => setEdit(false)} style={styles.button}>
+              //     <Text style={styles.buttonText}>Cancel</Text>
+              //   </TouchableOpacity>
+                <TouchableOpacity onPress={handleSave} style={styles.button}>
+                  <Text style={styles.buttonText}>Save</Text>
+                </TouchableOpacity>
+              // </View>
+            ) : (
+              <TouchableOpacity onPress={() => setEdit(true)} style={styles.button}>
+                <Text style={styles.buttonText}>Edit</Text>
+              </TouchableOpacity>
+            )}
+            <View>
+              <Text style={styles.availabiltyHeading}>Set your availability</Text>
+              <SetAvailabilityCalendar 
+                loggedInUserId={loggedInUserId} 
+                initialAvailability={availability}
+                />
+            </View>
+          </>
+        }
+      />
+    </SafeAreaView>
   );
 };
 
