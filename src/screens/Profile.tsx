@@ -170,9 +170,11 @@ const Profile = () => {
       try {
         await newAudioRef.put(blob);
 
-        const previousAudioRef = firebase.storage().refFromURL(audio)
-        previousAudioRef.delete()
-        console.log("Previous Audio deleted")
+        if (audio) {
+          const previousAudioRef = firebase.storage().refFromURL(audio)
+          previousAudioRef.delete()
+          console.log("Previous Audio deleted")
+        }
   
         const downloadURL = await newAudioRef.getDownloadURL();  
         setAudio(downloadURL)
@@ -251,19 +253,25 @@ const Profile = () => {
             )}
             </View>
             <View style={styles.mainImageContainer}>
-              {images.map((image, index) => (
-                <View style={styles.imageContainer} key={index}>
-                  <Image
-                    source={{ uri: image }}
-                    style={{ width: 60, height: 70, borderRadius: 3 }}
-                  />
-                  {edit && (
-                    <TouchableOpacity onPress={() => handleDeleteImage(image, index)}>
-                      <Text>X</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              ))}
+              { images.length > 0 ? 
+                (images.map((image, index) => (
+                  <View style={styles.imageContainer} key={index}>
+                    <Image
+                      source={{ uri: image }}
+                      style={{ width: 60, height: 70, borderRadius: 3 }}
+                    />
+                    {edit && (
+                      <TouchableOpacity onPress={() => handleDeleteImage(image, index)}>
+                        <Text>X</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )))
+              : (
+                  <View style={styles.noImageContainer}>
+                    <Text>No Images uploaded</Text>
+                  </View>
+                )}
             </View>
             {edit ? (
               // <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -374,6 +382,15 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  noImageContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+    width: 350,
+    height: 100
   },
   mainImageContainer: {
     display: 'flex',
