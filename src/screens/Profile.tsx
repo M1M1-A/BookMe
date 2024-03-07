@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthenticatedUserContext } from "../../App";
+import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from "../../config/firebase";
 import { collection, query, where, getDocs, updateDoc, doc, addDoc } from "firebase/firestore";
@@ -30,6 +31,7 @@ const Profile = () => {
   const [soundcloudLink, setSoundcloudLink] = useState<string>("");
   const [availability, setAvailability] = useState("");
   const [edit, setEdit] = useState<boolean>(false);
+  const navigation = useNavigation()
 
   const loggedInUserId = user ? user.uid : null;
 
@@ -287,6 +289,11 @@ const Profile = () => {
                 <Text style={styles.buttonText}>Edit</Text>
               </TouchableOpacity>
             )}
+            <TouchableOpacity 
+              onPress={() => navigation.navigate("PreviewProfile", {name, bio, images, audio, genres})} 
+              style={styles.previewProfileButton}>
+              <Text style={styles.buttonText}>Preview Profile</Text>
+            </TouchableOpacity>
             <View>
               <Text style={styles.availabiltyHeading}>Set your availability</Text>
               <SetAvailabilityCalendar 
@@ -352,6 +359,18 @@ const styles = StyleSheet.create({
     width: 150,
     fontSize: 20,
     backgroundColor: "#f57c00",
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    marginBottom: 20,
+    alignSelf: 'center'
+  },
+  previewProfileButton: {
+    height: 50,
+    width: 250,
+    fontSize: 20,
+    backgroundColor: "black",
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
