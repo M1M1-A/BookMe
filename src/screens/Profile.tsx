@@ -64,42 +64,46 @@ const Profile = () => {
   }, [loggedInUserId]); 
 
   const handleSave = async () => {
-    try {
-      const db = firebase.firestore()
-      const q = query(collection(db, "DJs"), where("userId", "==", loggedInUserId))
-      const querySnapshot = await getDocs(q)
-      const djDoc = querySnapshot.docs[0]
-  
-      if (djDoc) {
-        const djRef = doc(db, "DJs", djDoc.id)
-        await updateDoc(djRef, { 
-          name,
-          bio,
-          images,
-          genres,
-          audio,
-          instagram: instagramLink,
-          soundcloud: soundcloudLink,
-        })
-        console.log("DJ doc updated")
-      } else {
-        await addDoc(collection(db, "DJs"), {
-          name,
-          bio,
-          images,
-          genres,
-          audio,
-          instagram: instagramLink,
-          soundcloud: soundcloudLink,
-          userId: loggedInUserId
-        }) 
-        console.log("New doc created for DJ")
+    if (!name || !bio || !images || !genres) {
+      Alert.alert("This fields cannot be empty: Name, Bio, Images, Genres")
+    } else {
+      try {
+        const db = firebase.firestore()
+        const q = query(collection(db, "DJs"), where("userId", "==", loggedInUserId))
+        const querySnapshot = await getDocs(q)
+        const djDoc = querySnapshot.docs[0]
+    
+        if (djDoc) {
+          const djRef = doc(db, "DJs", djDoc.id)
+          await updateDoc(djRef, { 
+            name,
+            bio,
+            images,
+            genres,
+            audio,
+            instagram: instagramLink,
+            soundcloud: soundcloudLink,
+          })
+          console.log("DJ doc updated")
+        } else {
+          await addDoc(collection(db, "DJs"), {
+            name,
+            bio,
+            images,
+            genres,
+            audio,
+            instagram: instagramLink,
+            soundcloud: soundcloudLink,
+            userId: loggedInUserId
+          }) 
+          console.log("New doc created for DJ")
+        }
+      } catch (error) {
+        console.error("Error updating DJ doc", error)
       }
-    } catch (error) {
-      console.error("Error updating DJ doc", error)
-    }
 
-    setEdit(false);
+      setEdit(false);
+    }
   };
 
   const handleGenresChange = (selectedGenres) => {
