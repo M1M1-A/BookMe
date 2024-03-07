@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  ScrollView,
   Alert,
   FlatList
 } from "react-native";
@@ -78,6 +77,7 @@ const Profile = () => {
           bio,
           images,
           genres,
+          audio,
           instagram: instagramLink,
           soundcloud: soundcloudLink,
         })
@@ -88,6 +88,7 @@ const Profile = () => {
           bio,
           images,
           genres,
+          audio,
           instagram: instagramLink,
           soundcloud: soundcloudLink,
           userId: loggedInUserId
@@ -157,23 +158,31 @@ const Profile = () => {
       const uri = file.assets[0].uri;
       const audioFileName = file.assets[0].name;
       setAudioFileName(audioFileName)
-      const storageRef = firebase.storage().ref(`DJs/${name}/${audioFileName}`);
+      const newAudioRef = firebase.storage().ref(`DJs/${name}/${audioFileName}`);
   
       const response = await fetch(uri);
       const blob = await response.blob();
   
       try {
-        await storageRef.put(blob);
+        await newAudioRef.put(blob);
+
+        const previousAudioRef = firebase.storage().refFromURL(audio)
+        previousAudioRef.delete()
+        console.log("Previous Audio deleted")
   
-        const downloadURL = await storageRef.getDownloadURL();
-  
+        const downloadURL = await newAudioRef.getDownloadURL();  
         setAudio(downloadURL)
-        console.log("Audio uploaded")
+        console.log("New Audio uploaded")
       } catch (error) {
         console.error('Error uploading audio:', error);
       }
     }
   }
+
+  // console.log("Audio URL", audio)
+  // slight delay when changing audio, and pressing save. New audio URL 
+  // might not be setting in time before the save function executes, so 
+  // database doesn't get updated with new URL
 
   const profileInfo = [
     { label: "Name", value: name, onChangeText: setName },
