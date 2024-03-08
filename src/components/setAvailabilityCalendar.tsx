@@ -1,11 +1,15 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Calendar } from "react-native-calendars"
 import { firebase } from "../../config/firebase";
 import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 
-const SetAvailabilityCalendar = ({loggedInUserId, availability}) => {
-  const [selectedDates, setSelectedDates] = useState(availability)
+const SetAvailabilityCalendar = ({loggedInUserId, initialAvailability}) => {
+  const [selectedDates, setSelectedDates] = useState({})
+
+  useEffect(() => {
+    setSelectedDates(initialAvailability)
+  }, [initialAvailability])
 
   const handleDayPress = (day) => {
     const { dateString } = day;
@@ -34,7 +38,10 @@ const SetAvailabilityCalendar = ({loggedInUserId, availability}) => {
       }
     } catch (error) {
       console.error("Error updating availability: ", error);
-    }  }
+    }  
+  }
+
+  // console.log("Calendar", selectedDates)
 
   return (
     <View style={styles.container}>

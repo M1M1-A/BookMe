@@ -9,7 +9,8 @@ import Login from "./src/screens/LogIn";
 import SignUp from "./src/screens/SignUp";
 import MakeBooking from "./src/screens/MakeBooking";
 import Profile from './src/screens/Profile'
-import Form from "./src/screens/Form";
+// import Form from "./src/screens/Form";
+import PreviewProfile from "./src/screens/PreviewProfile";
 
 const Stack = createStackNavigator();
 export const AuthenticatedUserContext = createContext({});
@@ -35,8 +36,7 @@ const AuthStack = () => {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SignUp" component={SignUp} />
       <Stack.Screen name="MakeBooking" component={MakeBooking} />
-      <Stack.Screen name="Profile" component={Profile}/>
-      <Stack.Screen name="Form" component={Form} />
+      {/* <Stack.Screen name="Form" component={Form} /> */}
     </Stack.Navigator>
   );
 };
@@ -47,6 +47,7 @@ const HomeStack = () => {
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="MakeBooking" component={MakeBooking} />
       <Stack.Screen name="Profile" component={Profile}/>
+      <Stack.Screen name="PreviewProfile" component={PreviewProfile} />
     </Stack.Navigator>
   );
 };
