@@ -21,7 +21,6 @@ export default function Home() {
     bio: string,
     email: string,
     genres: string[],
-    hourlyRate: string,
     id: string,
     images: string[],
     instagram: URL,
@@ -65,7 +64,7 @@ export default function Home() {
             </View>
           </View>
           <TouchableOpacity 
-            onPress={()=> navigation.navigate('MakeBooking', {djId: item.id, djName: item.name})} 
+            onPress={()=> navigation.navigate('MakeBooking', {djId: item.id, djName: item.name, availableDates: item.availability})} 
             style={styles.button}>
             <Text style={{color: 'white'}}>BOOK</Text>
           </TouchableOpacity>

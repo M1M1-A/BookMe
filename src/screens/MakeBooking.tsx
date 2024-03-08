@@ -7,13 +7,14 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
-  Alert
+  Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { firebase } from "../../config/firebase";
 import { postcodeValidator } from "postcode-validator";
+import { Calendar } from "react-native-calendars";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -22,15 +23,15 @@ const MakeBooking = () => {
   const [date, setDate] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [contactNumber, setContactNumber] = useState<string>("")
+  const [contactNumber, setContactNumber] = useState<string>("");
   const [eventDescription, setEventDescription] = useState<string>("");
   const [street, setStreet] = useState<string>("");
-  const [postcode, setPostcode] = useState<string>("")
+  const [postcode, setPostcode] = useState<string>("");
   const [bookingRef, setBookingRef] = useState<string>("");
   const [modalVisible, setModalVisible] = useState(false);
   const route = useRoute();
   const navigation = useNavigation();
-  const { djId, djName } = route.params;
+  const { djId, djName, availableDates } = route.params;
 
   const submitRequest = async () => {
     const data = {
@@ -42,7 +43,7 @@ const MakeBooking = () => {
       eventStreet: street,
       postcode,
       description: eventDescription,
-      bookingStatus: 'requested'
+      bookingStatus: "requested",
     };
 
     try {
@@ -58,24 +59,42 @@ const MakeBooking = () => {
   };
 
   const checkPostcode = () => {
-      postcodeValidator(postcode, "GB") ? setPostcode(postcode) :
-      Alert.alert("Invalid postcode")
+    postcodeValidator(postcode, "GB")
+      ? setPostcode(postcode)
+      : Alert.alert("Invalid postcode");
   };
 
-  // date, time and duration to be changed so user can see
-  // Djs availability calendar and select from there
+  const handleDayPress = (day) => {
+    const { dateString } = day;
+
+    if (!availableDates[dateString]) {
+      Alert.alert('Date Not Available', 'Please select an available date.');
+    } else {
+      setDate(dateString);
+    }
+  };
+
+  const markedDates = {
+    ...availableDates,
+    [date]: { selected: true, selectedColor: 'blue' },
+  };
 
   return (
     <SafeAreaView>
       <Text style={styles.heading}>Request to book</Text>
       <Text style={styles.djName}>DJ {djName}</Text>
       <ScrollView>
+        <Text style={styles.text}>Select a date from {djName}'s availability</Text>
+        <Calendar 
+          onDayPress={handleDayPress}
+          markedDates={markedDates}
+          style={styles.calendar}
+        />
         <TextInput
           value={date}
-          placeholder="Event date, time, duration"
+          placeholder="Event date"
           placeholderTextColor={"#737373"}
           style={styles.inputField}
-          onChangeText={(text) => setDate(text)}
         />
         <TextInput
           value={name}
@@ -107,7 +126,7 @@ const MakeBooking = () => {
           style={styles.inputField}
           onChangeText={(text) => setStreet(text)}
         />
-        <TextInput 
+        <TextInput
           value={postcode}
           placeholder="Postcode"
           placeholderTextColor={"#737373"}
@@ -122,35 +141,30 @@ const MakeBooking = () => {
           style={styles.eventDescription}
           onChangeText={(text) => setEventDescription(text)}
         />
-      </ScrollView>
       <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={navigation.goBack} style={styles.button}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
+        <TouchableOpacity onPress={navigation.goBack} style={styles.button}>
+          <Text style={styles.buttonText}>Cancel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => submitRequest()} style={styles.button}>
+          <Text style={styles.buttonText}>Send Request</Text>
+        </TouchableOpacity>
+      </View>
+      <Modal visible={modalVisible} animationType="fade">
+        <View style={styles.modal}>
+          <Text style={styles.modalText}>Your request has been sent</Text>
+          <Text>Your booking reference is: {bookingRef}</Text>
+          <Text>You will receive an email once your booking is confirmed.</Text>
           <TouchableOpacity
-            onPress={() => submitRequest()}
-            style={styles.button}
+            onPress={() => {
+              setModalVisible(!modalVisible);
+              navigation.goBack();
+            }}
           >
-            <Text style={styles.buttonText}>Send Request</Text>
+            <Text>OK</Text>
           </TouchableOpacity>
         </View>
-        <Modal visible={modalVisible} animationType="fade">
-          <View style={styles.modal}>
-            <Text style={styles.modalText}>Your request has been sent</Text>
-            <Text>Your booking reference is: {bookingRef}</Text>
-            <Text>
-              You will receive an email once your booking is confirmed.
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                navigation.goBack();
-              }}
-            >
-              <Text>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
+      </Modal>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -167,6 +181,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "center",
     marginBottom: 25,
+  },
+  text: {
+    alignSelf: 'center',
+    fontSize: 18,
+    margin: 10,
+  },
+  calendar: {
+    width: 350, 
+    height: 350, 
+    alignSelf: 'center'
   },
   inputField: {
     width: windowWidth * 0.8,
