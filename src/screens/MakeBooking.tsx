@@ -29,6 +29,8 @@ const MakeBooking = () => {
   const [postcode, setPostcode] = useState<string>("");
   const [bookingRef, setBookingRef] = useState<string>("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false)
+  const [showSelectDateButton, setShowSelectDateButton] = useState(true)
   const route = useRoute();
   const navigation = useNavigation();
   const { djId, djName, availableDates } = route.params;
@@ -80,22 +82,51 @@ const MakeBooking = () => {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
       <Text style={styles.heading}>Request to book</Text>
       <Text style={styles.djName}>DJ {djName}</Text>
       <ScrollView>
-        <Text style={styles.text}>Select a date from {djName}'s availability</Text>
-        <Calendar 
-          onDayPress={handleDayPress}
-          markedDates={markedDates}
-          style={styles.calendar}
-        />
-        <TextInput
+      { showSelectDateButton && (
+        <View style={{display: 'flex', alignItems: 'center'}}>
+          <Text style={styles.text}>Select a date from {djName}'s availability</Text>
+          <TouchableOpacity 
+            onPress={() => {
+              setShowCalendar(true);
+              setShowSelectDateButton(false)
+            }}
+            style={styles.button}
+          >
+            <Text style={{color: "white"}}>Select a date</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+        {showCalendar && (
+          <View style={{display: 'flex', alignItems: 'center'}}>
+            <Calendar 
+              onDayPress={handleDayPress}
+              markedDates={markedDates}
+              style={styles.calendar}
+            />
+            <TouchableOpacity 
+              onPress={() => {
+                setShowCalendar(false)
+                setShowSelectDateButton(true)
+              }}
+              style={styles.button}
+            >
+              <Text style={{color: "white"}}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {/* <TextInput
           value={date}
           placeholder="Event date"
           placeholderTextColor={"#737373"}
           style={styles.inputField}
-        />
+        /> */}
+        <View style={styles.dateContainer}>
+          <Text style={styles.dateText}>Date: {date}</Text>
+        </View>
         <TextInput
           value={name}
           placeholder="Your name"
@@ -149,6 +180,7 @@ const MakeBooking = () => {
           <Text style={styles.buttonText}>Send Request</Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
       <Modal visible={modalVisible} animationType="fade">
         <View style={styles.modal}>
           <Text style={styles.modalText}>Your request has been sent</Text>
@@ -164,7 +196,6 @@ const MakeBooking = () => {
           </TouchableOpacity>
         </View>
       </Modal>
-      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -181,6 +212,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "center",
     marginBottom: 25,
+  },
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  button: {
+    backgroundColor: 'black',
+    height: 58,
+    width: 400,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+    alignSelf: 'center'
   },
   text: {
     alignSelf: 'center',
@@ -202,6 +249,22 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 5,
     fontSize: 18,
+  },
+  dateContainer: {
+    width: windowWidth * 0.8,
+    height: windowHeight * 0.05,
+    borderBottomWidth: 2,
+    borderBottomColor: "grey",
+    alignSelf: "center",
+    paddingLeft: 5,
+    marginTop: 20,
+    borderRadius: 5,
+    fontSize: 18,
+  },
+  dateText: {
+    color: "#737373",
+    fontSize: 18, 
+    fontWeight: 'bold'
   },
   dropDownContainer: {
     zIndex: 1,

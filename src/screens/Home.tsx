@@ -79,7 +79,7 @@ export default function Home() {
     )
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
       <View style={styles.header}>
         <SearchBar 
           placeholder="Search by DJ name or Genre"
