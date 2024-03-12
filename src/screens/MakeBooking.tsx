@@ -20,7 +20,8 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 const MakeBooking = () => {
-  const [date, setDate] = useState<string>("");
+  const [date, setDate] = useState<{[key: string]: {selected: boolean, selectedColor: string }}>({});
+  const [selectedDate, setSelectedDate] = useState<string>("")
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [contactNumber, setContactNumber] = useState<string>("");
@@ -28,9 +29,9 @@ const MakeBooking = () => {
   const [street, setStreet] = useState<string>("");
   const [postcode, setPostcode] = useState<string>("");
   const [bookingRef, setBookingRef] = useState<string>("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false)
-  const [showSelectDateButton, setShowSelectDateButton] = useState(true)
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [showCalendar, setShowCalendar] = useState<boolean>(false)
+  const [showSelectDateButton, setShowSelectDateButton] = useState<boolean>(true)
   const route = useRoute();
   const navigation = useNavigation();
   const { djId, djName, availableDates } = route.params;
@@ -72,15 +73,18 @@ const MakeBooking = () => {
     if (!availableDates[dateString]) {
       Alert.alert('Date Not Available', 'Please select an available date.');
     } else {
-      setDate(dateString);
+      setSelectedDate(dateString)
+      setDate({
+        [dateString]: { selected: true, selectedColor: 'orange' },
+      });
     }
   };
 
   const markedDates = {
     ...availableDates,
-    [date]: { selected: true, selectedColor: 'blue' },
+    [selectedDate]: { selected: true, selectedColor: 'blue' },
   };
-
+  
   return (
     <SafeAreaView style={{flex: 1}}>
       <Text style={styles.heading}>Request to book</Text>
@@ -125,7 +129,7 @@ const MakeBooking = () => {
           style={styles.inputField}
         /> */}
         <View style={styles.dateContainer}>
-          <Text style={styles.dateText}>Date: {date}</Text>
+          <Text style={styles.dateText}>Date: {selectedDate}</Text>
         </View>
         <TextInput
           value={name}
