@@ -11,6 +11,7 @@ import MakeBooking from "./src/screens/MakeBooking";
 import Profile from './src/screens/Profile'
 // import Form from "./src/screens/Form";
 import PreviewProfile from "./src/screens/PreviewProfile";
+import AllBookings from "./src/screens/AllBookings";
 
 const Stack = createStackNavigator();
 export const AuthenticatedUserContext = createContext({});
@@ -25,11 +26,10 @@ const AuthenticatedUserProvider = ({ children }) => {
 };
 
 const AuthStack = () => {
-  const navigation = useNavigation()
-
+  // const navigation = useNavigation()
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="Login"
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name="Home" component={Home}/>
@@ -48,6 +48,7 @@ const HomeStack = () => {
       <Stack.Screen name="MakeBooking" component={MakeBooking} />
       <Stack.Screen name="Profile" component={Profile}/>
       <Stack.Screen name="PreviewProfile" component={PreviewProfile} />
+      <Stack.Screen name="AllBookings" component={AllBookings} />
     </Stack.Navigator>
   );
 };

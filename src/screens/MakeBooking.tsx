@@ -191,12 +191,13 @@ const MakeBooking = () => {
           <Text>Your booking reference is: {bookingRef}</Text>
           <Text>You will receive an email once your booking is confirmed.</Text>
           <TouchableOpacity
+            style={styles.button}
             onPress={() => {
               setModalVisible(!modalVisible);
               navigation.goBack();
             }}
           >
-            <Text>OK</Text>
+            <Text style={styles.buttonText}>OK</Text>
           </TouchableOpacity>
         </View>
       </Modal>
