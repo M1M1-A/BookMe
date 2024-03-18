@@ -289,13 +289,13 @@ const Profile = () => {
               // </View>
             ) : (
               <View>
+                <TouchableOpacity onPress={() => setEdit(true)} style={styles.button}>
+                  <Text style={styles.buttonText}>Edit</Text>
+                </TouchableOpacity>
                 <TouchableOpacity 
                   onPress={() => navigation.navigate("AllBookings", {djDocId})} 
                   style={styles.button}>
                   <Text style={styles.buttonText}>All Bookings</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setEdit(true)} style={styles.button}>
-                  <Text style={styles.buttonText}>Edit</Text>
                 </TouchableOpacity>
               </View>
             )}
