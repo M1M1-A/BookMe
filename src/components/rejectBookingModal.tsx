@@ -3,42 +3,33 @@ import React, {useState} from 'react'
 import { firebase } from "../../config/firebase";
 import { doc, updateDoc } from 'firebase/firestore';
 
-const CancelBookingModal = ({visible, onClose, bookingId, fetchBookings}) => {
+const RejectBookingModal = ({visible, onClose, bookingId, fetchBookings}) => {
   const [cancellationReason, setCancellationReason] = useState<string>("")
   
-  const cancelBooking = async () => {
+  const rejectBooking = async () => {
     try {
         const db = firebase.firestore()
         const booking = doc(db, "Bookings", bookingId)
         await updateDoc(booking, {
-          bookingStatus: "cancelled",
-          cancellationReason
+          bookingStatus: "rejected"
         })
-        console.log("Booking cancelled")
+        console.log("Booking rejected")
         onClose()
         fetchBookings()
       } catch(error) {
-      console.log("Error cancelling booking", error)
+      console.log("Error rejecting booking", error)
     }
   }
 
   return (
     <Modal  visible={visible} animationType='fade'>
       <View style={styles.modalContainer}>
-        <Text style={styles.heading}>Are you sure you want to cancel?</Text>
-        <Text style={styles.text}>Enter your reason for cancelling. This will be sent to the client</Text>
-        <TextInput 
-          value={cancellationReason}
-          style={styles.textBox}
-          onChangeText={setCancellationReason}
-          // multiline={true}  
-          textAlignVertical="top"
-        />
+        <Text style={styles.heading}>Are you sure you want to reject?</Text>
         <View style={styles.buttonsContainer}>
           <TouchableOpacity style={styles.button} onPress={onClose}>
             <Text>Close</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={cancelBooking}>
+          <TouchableOpacity style={styles.button} onPress={rejectBooking}>
             <Text>Yes</Text>
           </TouchableOpacity>
         </View>
@@ -47,7 +38,7 @@ const CancelBookingModal = ({visible, onClose, bookingId, fetchBookings}) => {
   )
 }
 
-export default CancelBookingModal
+export default RejectBookingModal
 
 const styles = StyleSheet.create({
   modalContainer: {

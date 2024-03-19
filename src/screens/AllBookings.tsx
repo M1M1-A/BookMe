@@ -14,10 +14,12 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 const contactIcon = require("../../assets/user.png");
 const locationIcon = require("../../assets/location.png");
 import CancelBookingModal from "../components/cancelBookingModal";
+import RejectBookingModal from "../components/rejectBookingModal";
 
 const AllBookings = () => {
   const [allBookings, setAllBookings] = useState<{}>({});
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const navigation = useNavigation();
   const route = useRoute();
@@ -80,8 +82,14 @@ const AllBookings = () => {
     setCancelModalVisible(true);
   };
 
+  const handleRejectBooking = (id) => {
+    setSelectedBookingId(id);
+    setRejectModalVisible(true)
+  }
+
   const closeModal = () => {
     setCancelModalVisible(false);
+    setRejectModalVisible(false)
   };
 
   return (
@@ -132,7 +140,9 @@ const AllBookings = () => {
               >
                 <Text style={styles.buttonText}>Confirm</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity 
+                onPress={() => handleRejectBooking(item.id)}
+                style={styles.button}>
                 <Text style={styles.buttonText}>Reject</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}>
@@ -153,7 +163,7 @@ const AllBookings = () => {
                 </TouchableOpacity>
             </View>
             )}
-            { item.bookingStatus === "cancelled" && (
+            { (item.bookingStatus === "cancelled" || item.bookingStatus === "rejected") && (
               <View style={styles.statusCancelledButtons}>
                 <TouchableOpacity style={styles.button}>
                   <Text style={styles.buttonText}>More Info</Text>
@@ -173,6 +183,13 @@ const AllBookings = () => {
         visible={cancelModalVisible}
         onClose={closeModal}
         bookingId={selectedBookingId}
+        fetchBookings={fetchBookings}
+      />
+      <RejectBookingModal 
+        visible={rejectModalVisible}
+        onClose={closeModal}
+        bookingId={selectedBookingId}
+        fetchBookings={fetchBookings}
       />
     </SafeAreaView>
   );
