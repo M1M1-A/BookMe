@@ -1,73 +1,121 @@
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from "../../config/firebase";
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, updateDoc } from "firebase/firestore";
 import { useRoute, useNavigation } from "@react-navigation/native";
-const contactIcon = require('../../assets/user.png')
-const locationIcon = require('../../assets/location.png')
+const contactIcon = require("../../assets/user.png");
+const locationIcon = require("../../assets/location.png");
+import CancelBookingModal from "../components/cancelBookingModal";
 
 const AllBookings = () => {
-  const [allBookings, setAllBookings] = useState<{}>({})
-  const navigation = useNavigation()
-  const route = useRoute()
-  const { djDocId } = route.params
+  const [allBookings, setAllBookings] = useState<{}>({});
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { djDocId } = route.params;
+  const db = firebase.firestore()
+
+  const fetchBookings = async () => {
+    try {
+      const q = query(
+        collection(db, "Bookings"),
+        where("djId", "==", djDocId)
+      );
+      const querySnapshot = await getDocs(q);
+      const bookings = [];
+
+      querySnapshot.forEach(async (doc) => {
+        const data = doc.data();
+        const booking = { ...data, id: doc.id };
+        bookings.push(booking);
+      });
+
+      setAllBookings(bookings);
+      console.log("All Bookings retrieved");
+    } catch (error) {
+      console.log("Error fetching bookings", error);
+    }
+  };
 
   useEffect(() => {
-    //fetch all bookings with logged in DJs doc id
-    const fetchBookings = async () => {
-      try {
-        const db = firebase.firestore()
-        const q = query(collection(db, "Bookings"), where("djId", "==", djDocId));
-        const querySnapshot = await getDocs(q)
-        const bookings = []
-
-        querySnapshot.forEach(async (doc) => {
-          const booking = doc.data()
-          bookings.push(booking)
-        })
-        
-        setAllBookings(bookings)
-        console.log("All Bookings retrieved")
-      } catch (error) {
-        console.log("Error fetching bookings", error)
-      }
-    }
-
-    fetchBookings()
-  }, [djDocId])
+    fetchBookings();
+  }, [djDocId]);
 
   const limitDescriptionLength = (description) => {
     if (description.length <= 20) {
-      return description
+      return description;
     } else {
-      return description.slice(0, 20) + '...'
+      return description.slice(0, 20) + "...";
     }
-  }
+  };
+
+  const handleConfirm = async (id) => {
+    try {
+      if (id) {
+        const bookingRef = doc(db, "Bookings", id)
+        await updateDoc(bookingRef, {
+          bookingStatus: "confirmed"
+        })
+      }     
+      fetchBookings()
+      console.log("Booking confirmed")
+
+    } catch (error) {
+      console.log("Failed to confirm booking status");
+    }
+  };
+
+  
+  const handleCancelBooking = (id) => {
+    setSelectedBookingId(id);
+    setCancelModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setCancelModalVisible(false);
+  };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Text style={styles.heading}>BOOKINGS</Text>
-      <View style={{display: 'flex', flexDirection: 'row', width: 380, alignSelf: 'center'}}>
-        <Text style={{flex: 2}}>Filter</Text>
-        <Text style={{flex: 6}}>Search</Text>
-        <Text style={{flex: 2}}>Calendar</Text>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          width: 380,
+          alignSelf: "center",
+        }}
+      >
+        <Text style={{ flex: 2 }}>Filter</Text>
+        <Text style={{ flex: 6 }}>Search</Text>
+        <Text style={{ flex: 2 }}>Calendar</Text>
       </View>
-      <FlatList 
+      <FlatList
         data={allBookings}
-        keyExtractor={item => item.customerEmail}
-        renderItem={({item}) => (
+        keyExtractor={(item) => item.customerEmail}
+        renderItem={({ item }) => (
           <View style={styles.mainContainer}>
             <View style={styles.detailsContainer}>
               <View style={styles.contactContainer}>
-                <Image style={styles.icon} source={contactIcon}/>
+                <Image style={styles.icon} source={contactIcon} />
                 <Text style={styles.customerName}>{item.customerName}</Text>
               </View>
               <View style={styles.locationContainer}>
-                <Image style={styles.icon} source={locationIcon}/>
+                <Image style={styles.icon} source={locationIcon} />
                 <Text>{item.postcode}</Text>
               </View>
-              <Text style={styles.descriptionText}>{limitDescriptionLength(item.description)}</Text>
+              <Text style={styles.descriptionText}>
+                {limitDescriptionLength(item.description)}
+              </Text>
               <View style={styles.statusContainer}>
                 <View style={styles.statusTextContainer}>
                   <Text style={styles.statusText}>Status</Text>
@@ -75,8 +123,13 @@ const AllBookings = () => {
                 <Text>{item.bookingStatus.toUpperCase()}</Text>
               </View>
             </View>
-            <View style={styles.buttonsContainer}>
-              <TouchableOpacity style={styles.button}>
+            {/* <View style={styles.buttonsContainer}> */}
+            {item.bookingStatus === "requested" && (
+              <View style={styles.statusRequestedButtons}>
+              <TouchableOpacity 
+              onPress={() => handleConfirm(item.id)}
+              style={styles.button}
+              >
                 <Text style={styles.buttonText}>Confirm</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}>
@@ -85,124 +138,168 @@ const AllBookings = () => {
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>More Info</Text>
               </TouchableOpacity>
+              </View>
+            )}
+            { item.bookingStatus === "confirmed" && (
+              <View style={styles.statusConfirmedButtons}>
+                <TouchableOpacity 
+                  onPress={() => handleCancelBooking(item.id)}
+                  style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button}>
+                  <Text style={styles.buttonText}>More Info</Text>
+                </TouchableOpacity>
             </View>
-          </View>
-        )}     
+            )}
+            { item.bookingStatus === "cancelled" && (
+              <View style={styles.statusCancelledButtons}>
+                <TouchableOpacity style={styles.button}>
+                  <Text style={styles.buttonText}>More Info</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            </View>
+        )}
       />
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.goBackButton}
         onPress={() => navigation.goBack()}
-        >
-        <Text style={{color: 'white'}}>Go Back</Text>
+      >
+        <Text style={{ color: "white" }}>Go Back</Text>
       </TouchableOpacity>
+      <CancelBookingModal
+        visible={cancelModalVisible}
+        onClose={closeModal}
+        bookingId={selectedBookingId}
+      />
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default AllBookings
+export default AllBookings;
 
 const styles = StyleSheet.create({
   heading: {
     fontSize: 40,
-    fontWeight: 'bold',
-    alignSelf: 'center',
-    margin: 20
+    fontWeight: "bold",
+    alignSelf: "center",
+    margin: 20,
   },
   mainContainer: {
-    display: 'flex',
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: "row",
     width: 380,
     height: 160,
-    borderColor: 'black',
+    borderColor: "black",
     margin: 10,
-    justifyContent: 'space-between',
-    alignSelf: 'center',
+    justifyContent: "space-between",
+    alignSelf: "center",
     borderWidth: 1,
-    borderRadius: 5
+    borderRadius: 5,
   },
   detailsContainer: {
     flex: 2,
-    flexDirection: 'column',
-    margin: 10
+    flexDirection: "column",
+    margin: 10,
   },
   contactContainer: {
-    display: 'flex', 
-    flexDirection: 'row', 
+    display: "flex",
+    flexDirection: "row",
     marginTop: 10,
     // marginBottom: 5,
     marginLeft: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   customerName: {
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
   locationContainer: {
-    display: 'flex', 
-    flexDirection: 'row', 
+    display: "flex",
+    flexDirection: "row",
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 10,
   },
   descriptionText: {
-    marginLeft: 50, 
+    marginLeft: 50,
     marginBottom: 10,
-    fontSize: 15
+    fontSize: 15,
   },
   statusContainer: {
-    display: 'flex', 
-    flexDirection: 'row', 
-    marginLeft: 50, 
-    alignItems: 'center'
+    display: "flex",
+    flexDirection: "row",
+    marginLeft: 50,
+    alignItems: "center",
   },
   statusTextContainer: {
-    backgroundColor: 'green', 
-    marginRight: 10, 
-    borderRadius: 5, 
-    width: 60, 
+    backgroundColor: "green",
+    marginRight: 10,
+    borderRadius: 5,
+    width: 60,
     height: 25,
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: "center",
+    justifyContent: "center",
   },
   statusText: {
-    color: 'white',
-    fontWeight: 'bold'
+    color: "white",
+    fontWeight: "bold",
   },
   icon: {
-    width: 20, 
-    height: 20, 
-    marginRight: 20
+    width: 20,
+    height: 20,
+    marginRight: 20,
   },
-  buttonsContainer: {
+  statusConfirmedButtons: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    alignItems: "center",
     margin: 10,
-    backgroundColor: 'orange',
-    borderRadius: 4
+    // backgroundColor: 'orange',
+    borderRadius: 4,
+  },
+  statusRequestedButtons: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "space-around",
+    alignItems: "center",
+    margin: 10,
+    // backgroundColor: 'orange',
+    borderRadius: 4,
+  },
+  statusCancelledButtons: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    margin: 10,
+    // backgroundColor: 'orange',
+    borderRadius: 4,
   },
   button: {
     width: 80,
     height: 30,
-    backgroundColor: 'black',
+    backgroundColor: "black",
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 10
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 10,
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold'
+    color: "white",
+    fontWeight: "bold",
   },
   goBackButton: {
-    backgroundColor: 'black',
+    backgroundColor: "black",
     height: 58,
     width: 200,
     borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     margin: 10,
-    alignSelf: 'center'
-  }
-})
+    alignSelf: "center",
+  },
+});
