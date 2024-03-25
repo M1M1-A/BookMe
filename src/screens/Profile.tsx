@@ -353,6 +353,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 320,
     fontSize: 16,
+    borderWidth: 1,
     borderRadius: 10,
     padding: 10,
     marginRight: 10,

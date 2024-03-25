@@ -4,7 +4,6 @@ import { firebase } from "../../config/firebase";
 import { doc, updateDoc } from 'firebase/firestore';
 
 const RejectBookingModal = ({visible, onClose, bookingId, fetchBookings}) => {
-  const [cancellationReason, setCancellationReason] = useState<string>("")
   
   const rejectBooking = async () => {
     try {

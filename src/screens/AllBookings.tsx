@@ -13,14 +13,18 @@ import { collection, getDocs, query, where, doc, updateDoc } from "firebase/fire
 import { useRoute, useNavigation } from "@react-navigation/native";
 const contactIcon = require("../../assets/user.png");
 const locationIcon = require("../../assets/location.png");
+const calendarIcon = require('../../assets/calendar.png')
 import CancelBookingModal from "../components/cancelBookingModal";
 import RejectBookingModal from "../components/rejectBookingModal";
+import MoreInfoModal from "../components/moreInfoModal";
 
 const AllBookings = () => {
   const [allBookings, setAllBookings] = useState<{}>({});
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState({});
+  const [moreInfoModalVisible, setMoreInfoModalVisible] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
   const { djDocId } = route.params;
@@ -90,7 +94,29 @@ const AllBookings = () => {
   const closeModal = () => {
     setCancelModalVisible(false);
     setRejectModalVisible(false)
+    setMoreInfoModalVisible(false)
   };
+
+  const moreInfoButton = (booking) => {
+    return (
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={() => {
+          setSelectedBooking(booking);
+          setMoreInfoModalVisible(true)
+        }}
+      >
+        <Text style={styles.buttonText}>More Info</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  function formatDate(dateObject) {
+    const dateString = Object.keys(dateObject)[0]
+    const date = new Date(dateString);
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    return date.toLocaleDateString('en-GB', options);
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -118,8 +144,8 @@ const AllBookings = () => {
                 <Text style={styles.customerName}>{item.customerName}</Text>
               </View>
               <View style={styles.locationContainer}>
-                <Image style={styles.icon} source={locationIcon} />
-                <Text>{item.postcode}</Text>
+                <Image style={styles.icon} source={calendarIcon} />
+                <Text>{formatDate(item.date)}</Text>
               </View>
               <Text style={styles.descriptionText}>
                 {limitDescriptionLength(item.description)}
@@ -130,24 +156,26 @@ const AllBookings = () => {
                 </View>
                 <Text>{item.bookingStatus.toUpperCase()}</Text>
               </View>
+              <View style={styles.locationContainer}>
+                <Image style={styles.icon} source={locationIcon} />
+                <Text>{item.postcode}</Text>
+              </View>
             </View>
             {/* <View style={styles.buttonsContainer}> */}
             {item.bookingStatus === "requested" && (
               <View style={styles.statusRequestedButtons}>
-              <TouchableOpacity 
-              onPress={() => handleConfirm(item.id)}
-              style={styles.button}
-              >
-                <Text style={styles.buttonText}>Confirm</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={() => handleRejectBooking(item.id)}
-                style={styles.button}>
-                <Text style={styles.buttonText}>Reject</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>More Info</Text>
-              </TouchableOpacity>
+                <TouchableOpacity 
+                onPress={() => handleConfirm(item.id)}
+                style={styles.button}
+                >
+                  <Text style={styles.buttonText}>Confirm</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => handleRejectBooking(item.id)}
+                  style={styles.button}>
+                  <Text style={styles.buttonText}>Reject</Text>
+                </TouchableOpacity>
+                <View>{moreInfoButton(item)}</View>
               </View>
             )}
             { item.bookingStatus === "confirmed" && (
@@ -158,16 +186,12 @@ const AllBookings = () => {
                 >
                   <Text style={styles.buttonText}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
-                  <Text style={styles.buttonText}>More Info</Text>
-                </TouchableOpacity>
+                <View>{moreInfoButton(item)}</View>
             </View>
             )}
             { (item.bookingStatus === "cancelled" || item.bookingStatus === "rejected") && (
               <View style={styles.statusCancelledButtons}>
-                <TouchableOpacity style={styles.button}>
-                  <Text style={styles.buttonText}>More Info</Text>
-                </TouchableOpacity>
+                {moreInfoButton(item)}
               </View>
             )}
             </View>
@@ -191,6 +215,11 @@ const AllBookings = () => {
         bookingId={selectedBookingId}
         fetchBookings={fetchBookings}
       />
+      <MoreInfoModal 
+        visible={moreInfoModalVisible}
+        onClose={closeModal}
+        booking={selectedBooking}
+      />
     </SafeAreaView>
   );
 };
@@ -208,7 +237,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     width: 380,
-    height: 160,
+    height: 180,
     borderColor: "black",
     margin: 10,
     justifyContent: "space-between",
