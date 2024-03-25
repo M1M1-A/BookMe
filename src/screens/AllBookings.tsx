@@ -9,33 +9,29 @@ import {
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { firebase } from "../../config/firebase";
-import { collection, getDocs, query, where, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { useRoute, useNavigation } from "@react-navigation/native";
 const contactIcon = require("../../assets/user.png");
 const locationIcon = require("../../assets/location.png");
-const calendarIcon = require('../../assets/calendar.png')
-import CancelBookingModal from "../components/cancelBookingModal";
-import RejectBookingModal from "../components/rejectBookingModal";
-import MoreInfoModal from "../components/moreInfoModal";
+const calendarIcon = require("../../assets/calendar.png");
 
 const AllBookings = () => {
   const [allBookings, setAllBookings] = useState<{}>({});
-  const [cancelModalVisible, setCancelModalVisible] = useState(false);
-  const [rejectModalVisible, setRejectModalVisible] = useState(false);
-  const [selectedBookingId, setSelectedBookingId] = useState(null);
-  const [selectedBooking, setSelectedBooking] = useState({});
-  const [moreInfoModalVisible, setMoreInfoModalVisible] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
   const { djDocId } = route.params;
-  const db = firebase.firestore()
+  const db = firebase.firestore();
 
   const fetchBookings = async () => {
     try {
-      const q = query(
-        collection(db, "Bookings"),
-        where("djId", "==", djDocId)
-      );
+      const q = query(collection(db, "Bookings"), where("djId", "==", djDocId));
       const querySnapshot = await getDocs(q);
       const bookings = [];
 
@@ -64,58 +60,11 @@ const AllBookings = () => {
     }
   };
 
-  const handleConfirm = async (id) => {
-    try {
-      if (id) {
-        const bookingRef = doc(db, "Bookings", id)
-        await updateDoc(bookingRef, {
-          bookingStatus: "confirmed"
-        })
-      }     
-      fetchBookings()
-      console.log("Booking confirmed")
-
-    } catch (error) {
-      console.log("Failed to confirm booking status");
-    }
-  };
-
-  
-  const handleCancelBooking = (id) => {
-    setSelectedBookingId(id);
-    setCancelModalVisible(true);
-  };
-
-  const handleRejectBooking = (id) => {
-    setSelectedBookingId(id);
-    setRejectModalVisible(true)
-  }
-
-  const closeModal = () => {
-    setCancelModalVisible(false);
-    setRejectModalVisible(false)
-    setMoreInfoModalVisible(false)
-  };
-
-  const moreInfoButton = (booking) => {
-    return (
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => {
-          setSelectedBooking(booking);
-          setMoreInfoModalVisible(true)
-        }}
-      >
-        <Text style={styles.buttonText}>More Info</Text>
-      </TouchableOpacity>
-    )
-  }
-
   function formatDate(dateObject) {
-    const dateString = Object.keys(dateObject)[0]
+    const dateString = Object.keys(dateObject)[0];
     const date = new Date(dateString);
-    const options = { day: 'numeric', month: 'long', year: 'numeric' };
-    return date.toLocaleDateString('en-GB', options);
+    const options = { day: "numeric", month: "long", year: "numeric" };
+    return date.toLocaleDateString("en-GB", options);
   }
 
   return (
@@ -150,51 +99,28 @@ const AllBookings = () => {
               <Text style={styles.descriptionText}>
                 {limitDescriptionLength(item.description)}
               </Text>
+              <View style={styles.locationContainer}>
+                <Image style={styles.icon} source={locationIcon} />
+                <Text>{item.postcode}</Text>
+              </View>
+            </View>
+            <View style={styles.viewBookingButtons}>
               <View style={styles.statusContainer}>
                 <View style={styles.statusTextContainer}>
                   <Text style={styles.statusText}>Status</Text>
                 </View>
                 <Text>{item.bookingStatus.toUpperCase()}</Text>
               </View>
-              <View style={styles.locationContainer}>
-                <Image style={styles.icon} source={locationIcon} />
-                <Text>{item.postcode}</Text>
-              </View>
-            </View>
-            {/* <View style={styles.buttonsContainer}> */}
-            {item.bookingStatus === "requested" && (
-              <View style={styles.statusRequestedButtons}>
-                <TouchableOpacity 
-                onPress={() => handleConfirm(item.id)}
+              <TouchableOpacity
                 style={styles.button}
-                >
-                  <Text style={styles.buttonText}>Confirm</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  onPress={() => handleRejectBooking(item.id)}
-                  style={styles.button}>
-                  <Text style={styles.buttonText}>Reject</Text>
-                </TouchableOpacity>
-                <View>{moreInfoButton(item)}</View>
-              </View>
-            )}
-            { item.bookingStatus === "confirmed" && (
-              <View style={styles.statusConfirmedButtons}>
-                <TouchableOpacity 
-                  onPress={() => handleCancelBooking(item.id)}
-                  style={styles.button}
-                >
-                  <Text style={styles.buttonText}>Cancel</Text>
-                </TouchableOpacity>
-                <View>{moreInfoButton(item)}</View>
+                onPress={() => {
+                  navigation.navigate("MoreInfo", {booking: item, fetchBookings});
+                }}
+              >
+                <Text style={styles.buttonText}>View Booking</Text>
+              </TouchableOpacity>
             </View>
-            )}
-            { (item.bookingStatus === "cancelled" || item.bookingStatus === "rejected") && (
-              <View style={styles.statusCancelledButtons}>
-                {moreInfoButton(item)}
-              </View>
-            )}
-            </View>
+          </View>
         )}
       />
       <TouchableOpacity
@@ -203,23 +129,6 @@ const AllBookings = () => {
       >
         <Text style={{ color: "white" }}>Go Back</Text>
       </TouchableOpacity>
-      <CancelBookingModal
-        visible={cancelModalVisible}
-        onClose={closeModal}
-        bookingId={selectedBookingId}
-        fetchBookings={fetchBookings}
-      />
-      <RejectBookingModal 
-        visible={rejectModalVisible}
-        onClose={closeModal}
-        bookingId={selectedBookingId}
-        fetchBookings={fetchBookings}
-      />
-      <MoreInfoModal 
-        visible={moreInfoModalVisible}
-        onClose={closeModal}
-        booking={selectedBooking}
-      />
     </SafeAreaView>
   );
 };
@@ -276,15 +185,14 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     display: "flex",
-    flexDirection: "row",
-    marginLeft: 50,
+    flexDirection: "column",
     alignItems: "center",
   },
   statusTextContainer: {
     backgroundColor: "green",
     marginRight: 10,
     borderRadius: 5,
-    width: 60,
+    width: 100,
     height: 25,
     alignItems: "center",
     justifyContent: "center",
@@ -298,35 +206,16 @@ const styles = StyleSheet.create({
     height: 20,
     marginRight: 20,
   },
-  statusConfirmedButtons: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    margin: 10,
-    // backgroundColor: 'orange',
-    borderRadius: 4,
-  },
-  statusRequestedButtons: {
+  viewBookingButtons: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "space-around",
     alignItems: "center",
     margin: 10,
-    // backgroundColor: 'orange',
-    borderRadius: 4,
-  },
-  statusCancelledButtons: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    margin: 10,
-    // backgroundColor: 'orange',
     borderRadius: 4,
   },
   button: {
-    width: 80,
+    width: 115,
     height: 30,
     backgroundColor: "black",
     borderRadius: 10,
