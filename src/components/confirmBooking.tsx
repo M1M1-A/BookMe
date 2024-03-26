@@ -4,33 +4,35 @@ import { firebase } from "../../config/firebase";
 import { doc, updateDoc } from 'firebase/firestore';
 import { useNavigation } from "@react-navigation/native";
 
-const RejectBookingModal = ({visible, onClose, bookingId}) => {
+const ConfirmBookingModal = ({visible, onClose, bookingId}) => {
   const navigation = useNavigation()
 
-  const rejectBooking = async () => {
+  const handleConfirm = async () => {
     try {
-        const db = firebase.firestore()
-        const booking = doc(db, "Bookings", bookingId)
-        await updateDoc(booking, {
-          bookingStatus: "rejected"
-        })
-        console.log("Booking rejected")
-        onClose()
-        navigation.goBack()
-      } catch(error) {
-      console.log("Error rejecting booking", error)
+      if (bookingId) {
+        const db = firebase.firestore();
+        const bookingRef = doc(db, "Bookings", bookingId);
+        await updateDoc(bookingRef, {
+          bookingStatus: "confirmed",
+        });
+      }
+      navigation.goBack()
+      console.log("Booking confirmed");
+    } catch (error) {
+      console.log("Failed to confirm booking status");
     }
-  }
+  };
 
   return (
     <Modal  visible={visible} animationType='fade'>
       <View style={styles.modalContainer}>
-        <Text style={styles.heading}>Are you sure you want to reject?</Text>
+        <Text style={styles.heading}>Confirm booking?</Text>
+        <Text style={styles.text}>Once confirmed a message will be sent to the client</Text>
         <View style={styles.buttonsContainer}>
           <TouchableOpacity style={styles.button} onPress={onClose}>
             <Text>Close</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={rejectBooking}>
+          <TouchableOpacity style={styles.button} onPress={handleConfirm}>
             <Text>Yes</Text>
           </TouchableOpacity>
         </View>
@@ -39,7 +41,7 @@ const RejectBookingModal = ({visible, onClose, bookingId}) => {
   )
 }
 
-export default RejectBookingModal
+export default ConfirmBookingModal
 
 const styles = StyleSheet.create({
   modalContainer: {

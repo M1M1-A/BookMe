@@ -17,7 +17,7 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import { useRoute, useNavigation, useFocusEffect } from "@react-navigation/native";
 const contactIcon = require("../../assets/user.png");
 const locationIcon = require("../../assets/location.png");
 const calendarIcon = require("../../assets/calendar.png");
@@ -29,28 +29,31 @@ const AllBookings = () => {
   const { djDocId } = route.params;
   const db = firebase.firestore();
 
-  const fetchBookings = async () => {
-    try {
-      const q = query(collection(db, "Bookings"), where("djId", "==", djDocId));
-      const querySnapshot = await getDocs(q);
-      const bookings = [];
-
-      querySnapshot.forEach(async (doc) => {
-        const data = doc.data();
-        const booking = { ...data, id: doc.id };
-        bookings.push(booking);
-      });
-
-      setAllBookings(bookings);
-      console.log("All Bookings retrieved");
-    } catch (error) {
-      console.log("Error fetching bookings", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchBookings();
-  }, [djDocId]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchBookings = async () => {
+        try {
+          const q = query(collection(db, "Bookings"), where("djId", "==", djDocId));
+          const querySnapshot = await getDocs(q);
+          const bookings = [];
+  
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const booking = { ...data, id: doc.id };
+            bookings.push(booking);
+          });
+  
+          setAllBookings(bookings);
+          console.log("All Bookings retrieved");
+        } catch (error) {
+          console.log("Error fetching bookings", error);
+        }
+      };
+  
+      fetchBookings();
+      
+    }, [djDocId])
+  );
 
   const limitDescriptionLength = (description) => {
     if (description.length <= 20) {
@@ -114,7 +117,7 @@ const AllBookings = () => {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                  navigation.navigate("MoreInfo", {booking: item, fetchBookings});
+                  navigation.navigate("MoreInfo", {booking: item});
                 }}
               >
                 <Text style={styles.buttonText}>View Booking</Text>
@@ -146,7 +149,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     width: 380,
-    height: 180,
+    height: 160,
     borderColor: "black",
     margin: 10,
     justifyContent: "space-between",

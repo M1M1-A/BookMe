@@ -2,10 +2,12 @@ import { View, Text, Modal, TouchableOpacity, StyleSheet, TextInput } from 'reac
 import React, {useState} from 'react'
 import { firebase } from "../../config/firebase";
 import { doc, updateDoc } from 'firebase/firestore';
+import { useNavigation } from "@react-navigation/native";
 
-const CancelBookingModal = ({visible, onClose, bookingId, fetchBookings}) => {
+const CancelBookingModal = ({visible, onClose, bookingId}) => {
   const [cancellationReason, setCancellationReason] = useState<string>("")
-  
+  const navigation = useNavigation()
+
   const cancelBooking = async () => {
     try {
         const db = firebase.firestore()
@@ -16,7 +18,7 @@ const CancelBookingModal = ({visible, onClose, bookingId, fetchBookings}) => {
         })
         console.log("Booking cancelled")
         onClose()
-        fetchBookings()
+        navigation.goBack()
       } catch(error) {
       console.log("Error cancelling booking", error)
     }
