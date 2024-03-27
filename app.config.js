@@ -9,7 +9,7 @@ export default {
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/BookMeLogo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -26,7 +26,7 @@ export default {
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/BookMeLogo.png"
     },
     "plugins": [
       [

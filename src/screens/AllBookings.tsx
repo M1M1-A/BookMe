@@ -19,6 +19,8 @@ import BookingsCalendar from "../components/bookingsCalendar";
 
 const AllBookings = () => {
   const [allBookings, setAllBookings] = useState([]);
+  const [showCalendar, setShowCalendar] = useState(true)
+  const [showList, setShowList] = useState(false)
   const navigation = useNavigation();
   const route = useRoute();
   const { djDocId } = route.params;
@@ -63,10 +65,28 @@ const AllBookings = () => {
       >
         <Text style={{ flex: 2 }}>Filter</Text>
         <Text style={{ flex: 6 }}>Search</Text>
-        <Text style={{ flex: 2 }}>Calendar</Text>
+        {showCalendar ? (
+          <TouchableOpacity 
+            style={{ flex: 2 }}
+            onPress={() => {setShowList(true), setShowCalendar(false)}}
+          >
+          <Text>List</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity 
+            style={{ flex: 2 }}
+            onPress={() => {setShowList(false), setShowCalendar(true)}}
+          >
+          <Text>Calendar</Text>
+          </TouchableOpacity>
+        )}
       </View>
-      {/* <BookingsList allBookings={allBookings}/> */}
-      <BookingsCalendar allBookings={allBookings}/>
+      { showList && (
+        <BookingsList allBookings={allBookings}/>
+      )}
+      { showCalendar && (
+        <BookingsCalendar allBookings={allBookings}/>
+      )}
       <TouchableOpacity
         style={styles.goBackButton}
         onPress={() => navigation.goBack()}

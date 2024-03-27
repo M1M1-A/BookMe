@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native'
 import { Calendar } from "react-native-calendars"
-import MoreInfo from '../screens/MoreInfo'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 
 const BookingsCalendar = ({allBookings}) => {
   const [bookingDates, setBookingDates] = useState({})
@@ -22,18 +21,24 @@ const BookingsCalendar = ({allBookings}) => {
     })
   
     setBookingDates(uniqueDates)
+    getFlatlistData(selectedDate)
+
   }, [allBookings])
 
-  const handleDayPress = (day) => {
-    const { dateString } = day;
-    setSelectedDate(dateString);
-    
+  const getFlatlistData = (date) => {
     const bookingsToShow = allBookings.filter((booking) => {
       const dateKey = Object.keys(booking.date)[0]
-      return dateKey === dateString
+      return dateKey === date
     })
 
     setFlatlistData(bookingsToShow)
+  }
+
+  const handleDayPress = (day) => {
+    const { dateString } = day;
+
+    setSelectedDate(dateString);  
+    getFlatlistData(dateString)
   };
 
   const markedDates = {
@@ -42,7 +47,7 @@ const BookingsCalendar = ({allBookings}) => {
   };
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <Calendar 
         onDayPress={handleDayPress}
         markedDates={markedDates}  
@@ -60,7 +65,7 @@ const BookingsCalendar = ({allBookings}) => {
           </View>
         )}
         keyExtractor={(item) => item.id}
-        ListEmptyComponent={<Text>No bookings on this date</Text>}
+        ListEmptyComponent={<Text style={{margin: 10, alignSelf: 'center'}}>No bookings on this date</Text>}
       />
     </View>
   )
