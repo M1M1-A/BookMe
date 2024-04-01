@@ -14,6 +14,7 @@ import {
   where,
 } from "firebase/firestore";
 import { useRoute, useNavigation, useFocusEffect } from "@react-navigation/native";
+import DropDownPicker from 'react-native-dropdown-picker';
 import BookingsList from "../components/bookingsList";
 import BookingsCalendar from "../components/bookingsCalendar";
 
@@ -21,10 +22,20 @@ const AllBookings = () => {
   const [allBookings, setAllBookings] = useState([]);
   const [showCalendar, setShowCalendar] = useState(true)
   const [showList, setShowList] = useState(false)
+  const [filteredBookings, setFilteredBookings] = useState([])
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState(null);
   const navigation = useNavigation();
   const route = useRoute();
   const { djDocId } = route.params;
   const db = firebase.firestore();
+  const [items, setItems] = useState([
+      { label: 'Requested', value: 'requested' },
+      { label: 'Confirmed', value: 'confirmed' },
+      { label: 'Cancelled', value: 'cancelled' },
+      { label: 'Rejected', value: 'rejected' },
+      { label: 'Clear Selections', value: 'Clear Selections' },
+  ])
 
   useFocusEffect(
     React.useCallback(() => {
@@ -52,6 +63,18 @@ const AllBookings = () => {
     }, [djDocId])
   );
 
+  const handleFilter = () => {
+    let filtered = allBookings
+    if (value) {
+      filtered = allBookings.filter(
+        (booking) => booking.bookingStatus === value
+      );
+    }
+    setFilteredBookings(filtered)
+  };
+
+  console.log(value)
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Text style={styles.heading}>BOOKINGS</Text>
@@ -61,32 +84,45 @@ const AllBookings = () => {
           flexDirection: "row",
           width: 380,
           alignSelf: "center",
+          marginBottom: 100
         }}
       >
-        <Text style={{ flex: 2 }}>Filter</Text>
-        <Text style={{ flex: 6 }}>Search</Text>
+        <DropDownPicker
+          open={open}
+          value={value}
+          setValue={setValue}
+          setOpen={setOpen}
+          items={items}
+          setItems={setItems}
+          placeholder="Filter"
+          containerStyle={{ height: 40, flex: 3, zIndex: 2 }}
+          onChangeValue={() => {
+            if (value === "Clear Selections") {
+              setValue(null)
+            } else {
+              handleFilter()
+            }
+          }}
+        />
+        <Text style={{ flex: 4 }}>Search</Text>
         {showCalendar ? (
           <TouchableOpacity 
             style={{ flex: 2 }}
-            onPress={() => {setShowList(true), setShowCalendar(false)}}
+            onPress={() => {setShowList(true); setShowCalendar(false)}}
           >
           <Text>List</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity 
             style={{ flex: 2 }}
-            onPress={() => {setShowList(false), setShowCalendar(true)}}
+            onPress={() => {setShowList(false); setShowCalendar(true)}}
           >
           <Text>Calendar</Text>
           </TouchableOpacity>
         )}
       </View>
-      { showList && (
-        <BookingsList allBookings={allBookings}/>
-      )}
-      { showCalendar && (
-        <BookingsCalendar allBookings={allBookings}/>
-      )}
+      {showList && <BookingsList allBookings={filteredBookings.length > 0 ? filteredBookings : allBookings} />}
+      {showCalendar && <BookingsCalendar allBookings={filteredBookings.length > 0 ? filteredBookings : allBookings} />}
       <TouchableOpacity
         style={styles.goBackButton}
         onPress={() => navigation.goBack()}
