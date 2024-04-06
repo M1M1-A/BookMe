@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native'
 import { Calendar } from "react-native-calendars"
-import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 
 const BookingsCalendar = ({allBookings}) => {
   const [bookingDates, setBookingDates] = useState({})
@@ -47,7 +47,7 @@ const BookingsCalendar = ({allBookings}) => {
   };
 
   return (
-    <View style={{flex: 1, zIndex: 0}}>
+    <View>
       <Calendar 
         onDayPress={handleDayPress}
         markedDates={markedDates}  
