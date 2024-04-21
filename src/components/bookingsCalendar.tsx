@@ -55,13 +55,19 @@ const BookingsCalendar = ({allBookings}) => {
       <FlatList
         data={flatlistData}
         renderItem={({item}) => (
-          <View style={styles.bookingContainer}>
-            <Text>{item.customerName}</Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('MoreInfo', {booking: item})}
-            >
-              <Text>View Booking</Text>
-            </TouchableOpacity>
+          <View>
+            <View style={styles.bookingContainer}>
+              <View>
+                <Text style={styles.customerName}>{item.customerName}</Text>
+                <Text style={styles.bookingStatus}>Status: {item.bookingStatus}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('MoreInfo', {booking: item})}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>View Booking</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
         keyExtractor={(item) => item.id}
@@ -80,4 +86,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', 
     margin: 5
   },
+  customerName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 5
+  },
+  bookingStatus: {
+    marginLeft: 5
+  },
+  button: {
+    width: 115,
+    height: 30,
+    borderRadius: 5,
+    borderWidth: 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    fontWeight: 'bold'
+  }
 })

@@ -14,7 +14,6 @@ import {
   where,
 } from "firebase/firestore";
 import { useRoute, useNavigation, useFocusEffect } from "@react-navigation/native";
-import DropDownPicker from 'react-native-dropdown-picker';
 import BookingsList from "../components/bookingsList";
 import BookingsCalendar from "../components/bookingsCalendar";
 import FilterBookingsDropdown from "../components/FilterBookingsDropdown";
@@ -67,18 +66,10 @@ const AllBookings = () => {
     setFilteredBookings(filtered);
   };
   
-  return (
+    return (
     <SafeAreaView style={{ flex: 1 }}>
       <Text style={styles.heading}>BOOKINGS</Text>
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          width: 380,
-          alignSelf: "center",
-          margin: 20
-        }}
-      >
+      <View style={styles.searchAndFilterContainer}>
         <FilterBookingsDropdown handleFilter={handleFilter}/>
         <Text style={{ flex: 4 }}>Search</Text>
         {showCalendar ? (
@@ -119,6 +110,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "center",
     margin: 20,
+  },
+  searchAndFilterContainer: {
+    display: "flex",
+    flexDirection: "row",
+    width: 380,
+    alignSelf: "center",
+    margin: 20
   },
   goBackButton: {
     backgroundColor: "black",
