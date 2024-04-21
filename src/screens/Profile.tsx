@@ -30,6 +30,7 @@ const Profile = () => {
   const [instagramLink, setInstagramLink] = useState<string>("");
   const [soundcloudLink, setSoundcloudLink] = useState<string>("");
   const [availability, setAvailability] = useState("");
+  const [djDocId, setDjDocId] = useState<string>("")
   const [edit, setEdit] = useState<boolean>(false);
   const navigation = useNavigation()
 
@@ -42,6 +43,7 @@ const Profile = () => {
         const q = query(collection(db, "DJs"), where("userId", "==", loggedInUserId));
         const querySnapshot = await getDocs(q);
         const dj = querySnapshot.docs[0].data()
+        const djDocId = querySnapshot.docs[0].id
         setName(dj.name)
         setBio(dj.bio)
         setImages(dj.images)
@@ -50,6 +52,7 @@ const Profile = () => {
         setInstagramLink(dj.instagram)
         setSoundcloudLink(dj.soundcloud)
         setAvailability(dj.availability)
+        setDjDocId(djDocId)
 
         const decodedUrl = decodeURIComponent(dj.audio);
         const startIndex = decodedUrl.lastIndexOf('/') + 1;
@@ -285,9 +288,16 @@ const Profile = () => {
                 </TouchableOpacity>
               // </View>
             ) : (
-              <TouchableOpacity onPress={() => setEdit(true)} style={styles.button}>
-                <Text style={styles.buttonText}>Edit</Text>
-              </TouchableOpacity>
+              <View>
+                <TouchableOpacity onPress={() => setEdit(true)} style={styles.button}>
+                  <Text style={styles.buttonText}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => navigation.navigate("AllBookings", {djDocId})} 
+                  style={styles.button}>
+                  <Text style={styles.buttonText}>All Bookings</Text>
+                </TouchableOpacity>
+              </View>
             )}
             <TouchableOpacity 
               onPress={() => navigation.navigate("PreviewProfile", {name, bio, images, audio, genres})} 
@@ -343,6 +353,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 320,
     fontSize: 16,
+    borderWidth: 1,
     borderRadius: 10,
     padding: 10,
     marginRight: 10,

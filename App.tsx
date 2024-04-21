@@ -8,9 +8,11 @@ import Home from "./src/screens/Home";
 import Login from "./src/screens/LogIn";
 import SignUp from "./src/screens/SignUp";
 import MakeBooking from "./src/screens/MakeBooking";
-import Profile from './src/screens/Profile'
+import Profile from "./src/screens/Profile";
 // import Form from "./src/screens/Form";
 import PreviewProfile from "./src/screens/PreviewProfile";
+import AllBookings from "./src/screens/AllBookings";
+import MoreInfo from "./src/screens/MoreInfo";
 
 const Stack = createStackNavigator();
 export const AuthenticatedUserContext = createContext({});
@@ -25,18 +27,16 @@ const AuthenticatedUserProvider = ({ children }) => {
 };
 
 const AuthStack = () => {
-  const navigation = useNavigation()
-
+  // const navigation = useNavigation()
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="Login"
       screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name="Home" component={Home}/>
+      <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SignUp" component={SignUp} />
       <Stack.Screen name="MakeBooking" component={MakeBooking} />
-      {/* <Stack.Screen name="Form" component={Form} /> */}
     </Stack.Navigator>
   );
 };
@@ -46,8 +46,10 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="MakeBooking" component={MakeBooking} />
-      <Stack.Screen name="Profile" component={Profile}/>
+      <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="PreviewProfile" component={PreviewProfile} />
+      <Stack.Screen name="AllBookings" component={AllBookings} />
+      <Stack.Screen name="MoreInfo" component={MoreInfo} />
     </Stack.Navigator>
   );
 };
@@ -80,7 +82,7 @@ const RootNavigator = () => {
       {user ? <HomeStack /> : <AuthStack />}
     </NavigationContainer>
   );
-}
+};
 
 export default function App() {
   return (
@@ -89,4 +91,3 @@ export default function App() {
     </AuthenticatedUserProvider>
   );
 }
-

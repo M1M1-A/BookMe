@@ -1,40 +1,124 @@
-// converting firebase storage refs to urls in homepage.
+// filter bookings custom dropdown
 
-// const getImageURL = async (imageRef: string) => {
-//   const ref = firebase.storage().refFromURL(imageRef)
-//   const url = await ref.getDownloadURL()
-//   return url
-// }
+// import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+// import React, { useState } from "react";
 
-// useEffect(() => {
-//   firebase
-//     .firestore()
-//     .collection('DJs')
-//     .onSnapshot(async (querySnapshot) => {
-//       const allDjs: djData[] = [];
-//       const promises: Promise<string>[] = [];
+// const FilterBookingsDropdown = ({ handleFilter }) => {
+//   const [showOptions, setShowOptions] = useState(false);
+//   const [selections, setSelections] = useState([]);
 
-//       querySnapshot.forEach(async (doc) => {
-//         const dj = doc.data();
-//         const imageURLs: string[] = [];
+//   const handleSelection = (selection) => {
+//     const isSelected = selections.includes(selection);
 
-//         if (dj.images.length > 0) {
-//           dj.images.forEach((ref: string) => {
-//             const promise = getImageURL(ref);
-//             promises.push(promise);  
-//             promise.then((url) => {
-//               imageURLs.push(url);
-//             });
-//           });
-//         }
+//     if (isSelected) {
+//       const updatedSelections = selections.filter((item) => item !== selection);
+//       setSelections(updatedSelections);
+//     } else {
+//       setSelections([...selections, selection]);
+//     }
+//   };
 
-//         dj.images = imageURLs;
-//         dj.id = doc.id
-//         allDjs.push(dj);
-//       });
+//   const handleApplyFilter = () => {
+//     handleFilter(selections);
+//     setShowOptions(false);
+//   };
 
-//       await Promise.all(promises);  
-//       setDjs(allDjs);
-//       console.log("All DJs retrieved");
-//     });
-// }, []);
+//   return (
+//     <View style={styles.mainContainer}>
+//       <View>
+//         <TouchableOpacity onPress={() => setShowOptions(true)}>
+//           <Text>Filter</Text>
+//         </TouchableOpacity>
+//       </View>
+//       {showOptions && (
+//         <View>
+//           <TouchableOpacity
+//             onPress={() => handleSelection("requested")}
+//             style={
+//               selections.includes("requested")
+//                 ? styles.selectedOption
+//                 : styles.option
+//             }
+//           >
+//             <Text
+//               style={{
+//                 color: selections.includes("requested") ? "white" : "black",
+//               }}
+//             >
+//               Requested
+//             </Text>
+//           </TouchableOpacity>
+//           <TouchableOpacity
+//             onPress={() => handleSelection("confirmed")}
+//             style={
+//               selections.includes("confirmed")
+//                 ? styles.selectedOption
+//                 : styles.option
+//             }
+//           >
+//             <Text
+//               style={{
+//                 color: selections.includes("confirmed") ? "white" : "black",
+//               }}
+//             >
+//               Confirmed
+//             </Text>
+//           </TouchableOpacity>
+//           <TouchableOpacity
+//             onPress={handleApplyFilter}
+//             style={styles.applyFilter}
+//           >
+//             <Text style={styles.applyFilterText}>Apply Filter</Text>
+//           </TouchableOpacity>
+//         </View>
+//       )}
+//     </View>
+//   );
+// };
+
+// export default FilterBookingsDropdown;
+
+// const styles = StyleSheet.create({
+//   mainContainer: {
+//     flex: 2,
+// },
+//   option: {
+//     padding: 10,
+//     backgroundColor: "white",
+//     borderRadius: 5,
+//   },
+//   selectedOption: {
+//     padding: 10,
+//     backgroundColor: "#fad161",
+//     borderRadius: 5,
+//   },
+//   selectedOptionText: {
+//     color: "white",
+//   },
+//   applyFilter: {
+//     backgroundColor: "green",
+//     padding: 5,
+//     borderWidth: 1,
+//     borderRadius: 5,
+//     marginTop: 10,
+//   },
+//   applyFilterText: {
+//     color: "white",
+//     alignSelf: "center",
+//   },
+// });
+
+
+// handleFilter function for AllBookings
+
+// const handleFilter = (selections) => {
+//   let filtered = allBookings;
+
+//   if (selections.length > 0) {
+//     filtered = allBookings.filter((booking) =>
+//       selections.includes(booking.bookingStatus)
+//     );
+//   }
+
+//   setFilteredBookings(filtered);
+// };
