@@ -21,21 +21,21 @@ const LandingPage = () => {
       try {
         const q = query(collection(db, "DJs"), where("userId", "==", userId))
         const snapshot = await getDocs(q)
+        let docId;
         
         snapshot.forEach((doc) => {
+          docId = doc.id
           setDjDocId(doc.id)
           setDjName(doc.data().name)
         })
 
-        const query2 = query(collection(db, "Bookings"), where("djId", "==", djDocId))
+        const query2 = query(collection(db, "Bookings"), where("djId", "==", docId))
         const snapshot2 = await getDocs(query2)
         const newBookings = []
 
         snapshot2.forEach((doc) => {
           const data = doc.data()
-          // const dateString = Object.keys(data.date)[0]
           if (data.bookingStatus === "requested") {
-            // newBookings.push({name: data.customerName, date: dateString})
             newBookings.push(data)
           }
         })
@@ -70,12 +70,12 @@ const LandingPage = () => {
       </View>
       <Text style={styles.title}>Notifications</Text>
       <View style={styles.notificationsContainer}>
+        { bookings.length > 0 ? (
           <FlatList
             data={bookings}
             keyExtractor={(item) => item.bookingId}
             renderItem={({item}) => (
               <View style={styles.notificationList}>
-                { bookings ? (
                 <TouchableOpacity
                   onPress={() => navigation.navigate("MoreInfo", {booking: item})}
                 >
@@ -84,13 +84,14 @@ const LandingPage = () => {
                     wants to book you on {Object.keys(item.date)[0]}
                   </Text>
                 </TouchableOpacity>
-              ) : (
-                <Text>No recent requests</Text>
-                )}
+
               </View>
             )}
           >
           </FlatList>
+          ) : (
+            <Text>No recent requests</Text>
+          )}
       </View>
     </View>
   )
