@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { firebase } from "../../config/firebase";
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
+import { SafeAreaView } from 'react-native-safe-area-context';
 const profileIcon = require('../../assets/user.png') 
 const calendarIcon = require("../../assets/calendar2.png")
 const accountSettingsIcon = require("../../assets/settings.png")
@@ -48,7 +49,7 @@ const LandingPage = () => {
   }, [userId])
 
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
       <Text style={styles.title}>Welcome {djName}</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -63,7 +64,9 @@ const LandingPage = () => {
           <Image source={profileIcon} style={styles.profileIcon}/>
           <Text style={styles.buttonText}>Profile</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Account")}
+        >
           <Image source={accountSettingsIcon} style={styles.profileIcon}/>
           <Text style={styles.buttonText}>Account</Text>
         </TouchableOpacity>    
@@ -93,7 +96,7 @@ const LandingPage = () => {
             <Text>No recent requests</Text>
           )}
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
