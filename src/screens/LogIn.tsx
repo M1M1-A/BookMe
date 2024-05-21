@@ -25,7 +25,8 @@ export default function LogIn() {
     if (email !== "" && password !== "") {
       signInWithEmailAndPassword(auth, email, password)
         .then(() => {
-          navigation.navigate("Profile")
+          navigation.navigate('LandingPage', {userId: auth.currentUser.uid})
+          // navigation.navigate("Profile")
           console.log("Login successful")
         })
         .catch((error) => Alert.alert("Login error", error.message));

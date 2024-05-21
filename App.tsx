@@ -13,6 +13,8 @@ import Profile from "./src/screens/Profile";
 import PreviewProfile from "./src/screens/PreviewProfile";
 import AllBookings from "./src/screens/AllBookings";
 import MoreInfo from "./src/screens/MoreInfo";
+import LandingPage from "./src/screens/LandingPage";
+import Account from "./src/screens/Account";
 
 const Stack = createStackNavigator();
 export const AuthenticatedUserContext = createContext({});
@@ -50,6 +52,8 @@ const HomeStack = () => {
       <Stack.Screen name="PreviewProfile" component={PreviewProfile} />
       <Stack.Screen name="AllBookings" component={AllBookings} />
       <Stack.Screen name="MoreInfo" component={MoreInfo} />
+      <Stack.Screen name="LandingPage" component={LandingPage}/>
+      <Stack.Screen name="Account" component={Account}/>
     </Stack.Navigator>
   );
 };
